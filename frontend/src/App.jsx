@@ -30,28 +30,34 @@ function App() {
 
   function toggleSticker(sticker) {
     if (claiming.has(sticker.id)) return
-    setClaiming(prev => new Set(prev).add(sticker.id))
 
-    if (sticker.owned) {
-      fetch(`/api/user-stickers/${userStickerIds[sticker.id]}/`, { method: 'DELETE' })
-        .then(() => {
-          setUserStickerIds(prev => { const n = { ...prev }; delete n[sticker.id]; return n })
-          setStickers(prev => prev.map(s => s.id === sticker.id ? { ...s, owned: false } : s))
-        })
-        .finally(() => setClaiming(prev => { const n = new Set(prev); n.delete(sticker.id); return n }))
-    } else {
-      fetch('/api/user-stickers/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sticker_id: sticker.id }),
-      })
-        .then(r => r.json())
-        .then(us => {
-          setUserStickerIds(prev => ({ ...prev, [sticker.id]: us.id }))
-          setStickers(prev => prev.map(s => s.id === sticker.id ? { ...s, owned: true } : s))
-        })
-        .finally(() => setClaiming(prev => { const n = new Set(prev); n.delete(sticker.id); return n }))
+    const wasOwned = sticker.owned
+    const prevUserStickerId = userStickerIds[sticker.id]
+
+    setClaiming(prev => new Set(prev).add(sticker.id))
+    setStickers(prev => prev.map(s => s.id === sticker.id ? { ...s, owned: !wasOwned } : s))
+    if (wasOwned) {
+      setUserStickerIds(prev => { const n = { ...prev }; delete n[sticker.id]; return n })
     }
+
+    const request = wasOwned
+      ? fetch(`/api/user-stickers/${prevUserStickerId}/`, { method: 'DELETE' })
+      : fetch('/api/user-stickers/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sticker_id: sticker.id }),
+        }).then(r => r.json()).then(us => {
+          setUserStickerIds(prev => ({ ...prev, [sticker.id]: us.id }))
+        })
+
+    request.catch(() => {
+      setStickers(prev => prev.map(s => s.id === sticker.id ? { ...s, owned: wasOwned } : s))
+      if (wasOwned) {
+        setUserStickerIds(prev => ({ ...prev, [sticker.id]: prevUserStickerId }))
+      }
+    }).finally(() => {
+      setClaiming(prev => { const n = new Set(prev); n.delete(sticker.id); return n })
+    })
   }
 
   const sectionOrder = ['Panini', 'FWC', ...'ABCDEFGHIJKL'.split('').map(l => `Group ${l}`), 'Coca-Cola']
