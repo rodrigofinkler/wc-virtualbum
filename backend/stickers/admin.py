@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Country, Sticker
+from .models import Country, Sticker, User, UserSticker
 
 
 @admin.register(Country)
@@ -12,3 +12,13 @@ class CountryAdmin(admin.ModelAdmin):
 class StickerAdmin(admin.ModelAdmin):
     list_display = ["name", "country"]
     list_filter = ["name"]
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ["name", "email"]
+
+
+@admin.register(UserSticker)
+class UserStickerAdmin(admin.ModelAdmin):
+    list_display = ["user", "sticker", "added_at"]

@@ -22,3 +22,24 @@ class Sticker(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class User(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class UserSticker(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stickers")
+    sticker = models.ForeignKey(Sticker, on_delete=models.CASCADE, related_name="owners")
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["user", "sticker"]
+        ordering = ["-added_at"]
+
+    def __str__(self):
+        return f"{self.user} owns {self.sticker}"
