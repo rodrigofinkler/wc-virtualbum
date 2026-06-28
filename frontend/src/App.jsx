@@ -165,12 +165,15 @@ function groupStickers(stickers) {
   return gs
 }
 
-function resolveRoute(slug) {
+function resolveRoute(slug, code) {
+  if (code) {
+    const upper = code.toUpperCase()
+    if (flags[upper]) return { type: 'country', code: upper }
+    return null
+  }
   if (!slug) return { type: 'all' }
   if (slugToGroup[slug]) return { type: 'group', group: slugToGroup[slug] }
-  const upper = slug.toUpperCase()
-  if (flags[upper]) return { type: 'country', code: upper }
-  return { type: 'all' }
+  return null
 }
 
 function App() {
@@ -179,13 +182,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Page />} />
         <Route path="/:slug" element={<Page />} />
+        <Route path="/country/:code" element={<Page />} />
       </Routes>
     </BrowserRouter>
   )
 }
 
 function Page() {
-  const { slug } = useParams()
+  const params = useParams()
+  const slug = params.slug
+  const code = params.code
   const navigate = useNavigate()
 
   const [stickers, setStickers] = useState([])
@@ -209,13 +215,13 @@ function Page() {
     })
   }, [])
 
-  const route = useMemo(() => resolveRoute(slug), [slug])
+  const route = useMemo(() => resolveRoute(slug, code), [slug, code])
 
   useEffect(() => {
-    if (slug && route.type === 'all') {
+    if (!route) {
       navigate('/', { replace: true })
     }
-  }, [slug, route, navigate])
+  }, [route, navigate])
 
   const groups = useMemo(() => groupStickers(stickers), [stickers])
 
@@ -278,13 +284,14 @@ function Page() {
     })
     Object.keys(flags)
       .sort()
-      .forEach((code) => {
-        items.push({ slug: code.toLowerCase(), label: code, emoji: flags[code] })
+      .forEach((c) => {
+        items.push({ slug: `country/${c.toLowerCase()}`, label: c, emoji: flags[c] })
       })
     return items
   }, [groups])
 
-  const currentIdx = navOrder.findIndex((item) => (slug ? item.slug === slug : item.slug === ''))
+  const currentSlug = route?.type === 'country' ? `country/${route.code.toLowerCase()}` : slug || ''
+  const currentIdx = navOrder.findIndex((item) => item.slug === currentSlug)
   const prev = currentIdx > 0 ? navOrder[currentIdx - 1] : null
   const next = currentIdx < navOrder.length - 1 ? navOrder[currentIdx + 1] : null
 
@@ -308,6 +315,8 @@ function Page() {
         Loading stickers...
       </div>
     )
+
+  if (!route) return null
 
   return (
     <div className="container">
@@ -349,7 +358,7 @@ function Page() {
           ))}
       </div>
 
-      {slug && !search && (
+      {(slug || code) && !search && route && (
         <div className="nav-row">
           <button
             className="nav-arrow"
