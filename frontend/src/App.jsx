@@ -1,11 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+const sectionOrder = ['Panini', 'FWC', ...'ABCDEFGHIJKL'.split('').map(l => `Group ${l}`), 'Coca-Cola']
+
+function groupStickers(stickers) {
+  const gs = {}
+  stickers.forEach(st => {
+    const g = st.country ? `Group ${st.country.group}` : st.name.startsWith('CC') ? 'Coca-Cola' : st.name === '00' ? 'Panini' : 'FWC'
+    if (!gs[g]) gs[g] = []
+    gs[g].push(st)
+  })
+  return gs
+}
 
 function App() {
   const [stickers, setStickers] = useState([])
   const [loading, setLoading] = useState(true)
   const [claiming, setClaiming] = useState(new Set())
   const [userStickerIds, setUserStickerIds] = useState({})
-  const [groups, setGroups] = useState([])
   const [activeGroup, setActiveGroup] = useState('all')
 
   useEffect(() => {
@@ -17,16 +28,11 @@ function App() {
       const map = {}
       us.forEach(us => { map[us.sticker.id] = us.id })
       setUserStickerIds(map)
-      const gs = {}
-      s.forEach(st => {
-        const g = st.country ? `Group ${st.country.group}` : st.name.startsWith('CC') ? 'Coca-Cola' : st.name === '00' ? 'Panini' : 'FWC'
-        if (!gs[g]) gs[g] = []
-        gs[g].push(st)
-      })
-      setGroups(gs)
       setLoading(false)
     })
   }, [])
+
+  const groups = useMemo(() => groupStickers(stickers), [stickers])
 
   function toggleSticker(sticker) {
     if (claiming.has(sticker.id)) return
@@ -59,8 +65,6 @@ function App() {
       setClaiming(prev => { const n = new Set(prev); n.delete(sticker.id); return n })
     })
   }
-
-  const sectionOrder = ['Panini', 'FWC', ...'ABCDEFGHIJKL'.split('').map(l => `Group ${l}`), 'Coca-Cola']
 
   const displayed = activeGroup === 'all'
     ? sectionOrder.flatMap(s => groups[s] || [])
