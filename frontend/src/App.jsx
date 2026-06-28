@@ -106,7 +106,7 @@ function App() {
                onClick={() => toggleSticker(sticker)}>
             <div className="sticker-image">
               <div className="placeholder">
-                {sticker.country ? sticker.country.code : sticker.name.startsWith('CC') ? 'CC' : sticker.name}
+                {sticker.name}
               </div>
             </div>
             <div className="info">
