@@ -2,8 +2,20 @@ import { useEffect, useMemo, useState } from 'react'
 
 const sectionOrder = ['Panini', 'FWC', ...'ABCDEFGHIJKL'.split('').map(l => `Group ${l}`), 'Coca-Cola']
 
+const fifaToIso = {
+  ALG: 'DZ', ARG: 'AR', AUS: 'AU', AUT: 'AT', BEL: 'BE', BIH: 'BA', BRA: 'BR',
+  CAN: 'CA', CIV: 'CI', COD: 'CD', COL: 'CO', CPV: 'CV', CRO: 'HR', CUW: 'CW',
+  CZE: 'CZ', ECU: 'EC', EGY: 'EG', ENG: 'GB-ENG', ESP: 'ES', FRA: 'FR', GER: 'DE',
+  GHA: 'GH', HAI: 'HT', IRN: 'IR', IRQ: 'IQ', JOR: 'JO', JPN: 'JP', KOR: 'KR',
+  KSA: 'SA', MAR: 'MA', MEX: 'MX', NED: 'NL', NOR: 'NO', NZL: 'NZ', PAN: 'PA',
+  PAR: 'PY', POR: 'PT', QAT: 'QA', RSA: 'ZA', SCO: 'GB-SCT', SEN: 'SN', SUI: 'CH',
+  SWE: 'SE', TUN: 'TN', TUR: 'TR', URU: 'UY', USA: 'US', UZB: 'UZ',
+}
+
 function flagEmoji(code) {
-  return [...code].map(c => String.fromCodePoint(0x1F1E6 + c.codePointAt(0) - 65)).join('')
+  const iso = fifaToIso[code]
+  if (!iso || iso.length !== 2) return ''
+  return [...iso].map(c => String.fromCodePoint(0x1F1E6 + c.codePointAt(0) - 65)).join('')
 }
 
 function groupStickers(stickers) {
