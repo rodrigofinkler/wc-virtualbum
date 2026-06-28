@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Link,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
 
 const sectionOrder = [
   'Panini',
@@ -176,13 +184,64 @@ function resolveRoute(slug, code) {
   return null
 }
 
+function CountryList() {
+  const [countries, setCountries] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/countries/')
+      .then((r) => r.json())
+      .then((data) => {
+        setCountries(data)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading)
+    return (
+      <div className="loading">
+        <div className="spinner" />
+        Loading countries...
+      </div>
+    )
+
+  return (
+    <div className="container">
+      <header>
+        <div className="title">
+          <h1>
+            <Link to="/" className="home-link">
+              FIFA World Cup 26
+            </Link>
+          </h1>
+        </div>
+        <div className="stats">
+          <span>{countries.length} countries</span>
+        </div>
+      </header>
+
+      <div className="country-grid">
+        {countries.map((c) => (
+          <Link key={c.id} to={`/country/${c.code.toLowerCase()}`} className="country-card">
+            <span className="country-flag">{flagEmoji(c.code)}</span>
+            <span className="country-code">{c.code}</span>
+            <span className="country-name">{c.name}</span>
+            <span className="country-group">Group {c.group}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Page />} />
-        <Route path="/:slug" element={<Page />} />
+        <Route path="/country" element={<CountryList />} />
         <Route path="/country/:code" element={<Page />} />
+        <Route path="/:slug" element={<Page />} />
       </Routes>
     </BrowserRouter>
   )
@@ -190,6 +249,7 @@ function App() {
 
 function Page() {
   const params = useParams()
+  const { pathname } = useLocation()
   const slug = params.slug
   const code = params.code
   const navigate = useNavigate()
@@ -356,6 +416,12 @@ function Page() {
         <button onClick={() => goTo('')} className={!slug ? 'active' : ''}>
           All
         </button>
+        <Link
+          to="/country"
+          className={`countries-btn${pathname.startsWith('/country') ? ' active' : ''}`}
+        >
+          Countries
+        </Link>
         {sectionOrder
           .filter((s) => groups[s])
           .map((s) => (
