@@ -2,6 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 
 const sectionOrder = ['Panini', 'FWC', ...'ABCDEFGHIJKL'.split('').map(l => `Group ${l}`), 'Coca-Cola']
 
+function flagEmoji(code) {
+  return [...code].map(c => String.fromCodePoint(0x1F1E6 + c.codePointAt(0) - 65)).join('')
+}
+
 function groupStickers(stickers) {
   const gs = {}
   stickers.forEach(st => {
@@ -111,7 +115,7 @@ function App() {
             </div>
             <div className="info">
               <span className="number">{sticker.name}</span>
-              {sticker.country && <span className="name">{sticker.country.name}</span>}
+              {sticker.country && <span className="name">{flagEmoji(sticker.country.code)} {sticker.country.name}</span>}
               {sticker.country && <span className="collection">Group {sticker.country.group}</span>}
               <span className={`badge ${sticker.owned ? 'owned' : 'missing'}`}>
                 {sticker.owned ? '✓ Owned' : '○ Missing'}
