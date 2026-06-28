@@ -318,8 +318,8 @@ header .stats .highlight {
 }
 
 .flagged .badge.owned {
-  color: var(--fc1);
-  background: color-mix(in srgb, var(--fc1) 15%, transparent);
+  color: #fff;
+  background: color-mix(in srgb, var(--fc1) 25%, transparent);
 }
 
 .badge.missing {
