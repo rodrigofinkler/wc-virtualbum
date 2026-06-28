@@ -14,7 +14,13 @@ const fifaToIso = {
 
 function flagEmoji(code) {
   const iso = fifaToIso[code]
-  if (!iso || iso.length !== 2) return ''
+  if (!iso) return ''
+  if (iso.includes('-')) {
+    const tag = iso.replace('-', '').toLowerCase()
+    return String.fromCodePoint(0x1F3F4) +
+      [...tag].map(c => String.fromCodePoint(0xE0060 + c.charCodeAt(0))).join('') +
+      String.fromCodePoint(0xE007F)
+  }
   return [...iso].map(c => String.fromCodePoint(0x1F1E6 + c.codePointAt(0) - 65)).join('')
 }
 
