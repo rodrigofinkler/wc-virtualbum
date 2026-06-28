@@ -68,53 +68,53 @@ const flags = {
 }
 
 const flagColors = {
-  ALG: ['#006233', '#FFFFFF', '#D21034'],
-  ARG: ['#75AADB', '#FFFFFF', '#75AADB'],
-  AUS: ['#00008B', '#FFFFFF', '#FF0000'],
-  AUT: ['#ED2939', '#FFFFFF', '#ED2939'],
-  BEL: ['#000000', '#FDEE00', '#EF3340'],
-  BIH: ['#002395', '#FEDB00', '#002395'],
-  BRA: ['#009739', '#FEDF00', '#002776'],
-  CAN: ['#FF0000', '#FFFFFF', '#FF0000'],
-  CIV: ['#FF8200', '#FFFFFF', '#009E60'],
+  ALG: ['#FFFFFF', '#006633', '#D21034'],
+  ARG: ['#75AADB', '#FFFFFF', '#000000'],
+  AUS: ['#FFCD00', '#007A3D', '#000000'],
+  AUT: ['#ED2939', '#FFFFFF', '#000000'],
+  BEL: ['#EF3340', '#000000', '#FDDA24'],
+  BIH: ['#003399', '#FFCC00', '#FFFFFF'],
+  BRA: ['#FFDF00', '#009C3B', '#002776'],
+  CAN: ['#DC143C', '#FFFFFF', '#000000'],
+  CIV: ['#FF8000', '#FFFFFF', '#009944'],
   COD: ['#007FFF', '#F7D618', '#CE1021'],
   COL: ['#FCD116', '#003893', '#CE1126'],
-  CPV: ['#003893', '#FFFFFF', '#CF202A'],
-  CRO: ['#ED1C24', '#FFFFFF', '#005DA4'],
-  CUW: ['#002B7F', '#FEDD00', '#002B7F'],
-  CZE: ['#11457A', '#FFFFFF', '#D7141A'],
-  ECU: ['#FEDF00', '#003893', '#ED1C24'],
+  CPV: ['#0073CF', '#FFFFFF', '#CF142B'],
+  CRO: ['#FFFFFF', '#DC0000', '#172D7E'],
+  CUW: ['#005B96', '#FFCD00', '#FFFFFF'],
+  CZE: ['#D7141A', '#FFFFFF', '#11457E'],
+  ECU: ['#FFDD00', '#0038A8', '#ED1C24'],
   EGY: ['#CE1126', '#FFFFFF', '#000000'],
-  ENG: ['#CF142B', '#FFFFFF', '#CF142B'],
-  ESP: ['#C60B1E', '#FFC400', '#C60B1E'],
+  ENG: ['#FFFFFF', '#00205B', '#C8102E'],
+  ESP: ['#AA151B', '#FFC400', '#0038A8'],
   FRA: ['#002395', '#FFFFFF', '#ED2939'],
-  GER: ['#000000', '#DD0000', '#FFCC00'],
-  GHA: ['#CE1126', '#FCD116', '#006B3F'],
-  HAI: ['#00209F', '#D21034', '#00209F'],
-  IRN: ['#239F40', '#FFFFFF', '#DA0000'],
-  IRQ: ['#CE1126', '#FFFFFF', '#000000'],
-  JOR: ['#000000', '#FFFFFF', '#006A4E'],
-  JPN: ['#BC002D', '#FFFFFF', '#BC002D'],
-  KOR: ['#CD2E3A', '#003478', '#FFFFFF'],
-  KSA: ['#006C35', '#FFFFFF', '#006C35'],
-  MAR: ['#C1272D', '#006233', '#006233'],
+  GER: ['#FFFFFF', '#000000', '#DD0000'],
+  GHA: ['#FFFFFF', '#000000', '#008000'],
+  HAI: ['#00205B', '#CE1126', '#FFFFFF'],
+  IRN: ['#FFFFFF', '#CD002F', '#239655'],
+  IRQ: ['#007A3D', '#FFFFFF', '#CE1126'],
+  JOR: ['#FFFFFF', '#CE1126', '#007A3D'],
+  JPN: ['#003087', '#FFFFFF', '#BC002D'],
+  KOR: ['#CD002F', '#000000', '#FFFFFF'],
+  KSA: ['#006633', '#FFFFFF', '#000000'],
+  MAR: ['#C1272D', '#006233', '#FFFFFF'],
   MEX: ['#006847', '#FFFFFF', '#CE1126'],
-  NED: ['#AE1C28', '#FFFFFF', '#003882'],
-  NOR: ['#BA0C2F', '#FFFFFF', '#00205B'],
-  NZL: ['#00247D', '#FFFFFF', '#CC142B'],
-  PAN: ['#00529F', '#CE1126', '#00529F'],
-  PAR: ['#D52B1E', '#FFFFFF', '#0038A8'],
-  POR: ['#006600', '#FFD700', '#FF0000'],
-  QAT: ['#8A1538', '#FFFFFF', '#8A1538'],
-  RSA: ['#DE3831', '#007A4D', '#002395'],
-  SCO: ['#005EB8', '#FFFFFF', '#005EB8'],
-  SEN: ['#00853F', '#FDEF42', '#E31B23'],
-  SUI: ['#DA291C', '#FFFFFF', '#DA291C'],
-  SWE: ['#005BAA', '#FECC00', '#005BAA'],
-  TUN: ['#E70013', '#FFFFFF', '#E70013'],
-  TUR: ['#E30A17', '#FFFFFF', '#E30A17'],
-  URU: ['#0038A8', '#FFFFFF', '#FCBF49'],
-  USA: ['#B22234', '#FFFFFF', '#3C3B6E'],
+  NED: ['#FF5F00', '#000000', '#FFFFFF'],
+  NOR: ['#BA0C2F', '#00205B', '#FFFFFF'],
+  NZL: ['#000000', '#FFFFFF', '#C0C0C0'],
+  PAN: ['#FFFFFF', '#CE1126', '#0038A8'],
+  PAR: ['#FFFFFF', '#D50032', '#003087'],
+  POR: ['#CE1126', '#006633', '#FFCC00'],
+  QAT: ['#800020', '#FFFFFF', '#000000'],
+  RSA: ['#FFB800', '#007A3D', '#000000'],
+  SCO: ['#002654', '#FFFFFF', '#CE1126'],
+  SEN: ['#008542', '#FFFFFF', '#FFCD00'],
+  SUI: ['#DA291C', '#FFFFFF', '#000000'],
+  SWE: ['#FFCC00', '#006AA7', '#FFFFFF'],
+  TUN: ['#E70013', '#FFFFFF', '#000000'],
+  TUR: ['#E30A17', '#FFFFFF', '#000000'],
+  URU: ['#5FAFDC', '#FFFFFF', '#000000'],
+  USA: ['#FFFFFF', '#002855', '#BF0D3E'],
   UZB: ['#0099B5', '#FFFFFF', '#1EB53A'],
   COKE: ['#F40000', '#000000', '#F40000'],
   GOLD: ['#BF953F', '#FCF6B5', '#B38728'],
@@ -259,6 +259,7 @@ function Page() {
   const [claiming, setClaiming] = useState(new Set())
   const [userStickerIds, setUserStickerIds] = useState({})
   const [search, setSearch] = useState('')
+  const [ownership, setOwnership] = useState('all')
 
   useEffect(() => {
     Promise.all([
@@ -366,13 +367,18 @@ function Page() {
   const prev = currentIdx > 0 ? navOrder[currentIdx - 1] : null
   const next = currentIdx < navOrder.length - 1 ? navOrder[currentIdx + 1] : null
 
-  const displayed = search
+  const baseDisplayed = search
     ? stickers.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()))
     : route.type === 'country'
       ? stickers.filter((s) => s.country?.code === route.code)
       : route.type === 'group'
         ? groups[route.group] || []
         : sectionOrder.flatMap((s) => groups[s] || [])
+
+  const displayed =
+    ownership === 'all'
+      ? baseDisplayed
+      : baseDisplayed.filter((s) => (ownership === 'owned' ? s.owned : !s.owned))
 
   function goTo(slug) {
     setSearch('')
@@ -416,6 +422,20 @@ function Page() {
         <button onClick={() => goTo('')} className={!slug ? 'active' : ''}>
           All
         </button>
+        <div className="ownership-tabs">
+          <button
+            className={ownership === 'owned' ? 'active' : ''}
+            onClick={() => setOwnership(ownership === 'owned' ? 'all' : 'owned')}
+          >
+            ✓ Owned
+          </button>
+          <button
+            className={ownership === 'missing' ? 'active' : ''}
+            onClick={() => setOwnership(ownership === 'missing' ? 'all' : 'missing')}
+          >
+            ○ Missing
+          </button>
+        </div>
         <Link
           to="/country"
           className={`countries-btn${pathname.startsWith('/country') ? ' active' : ''}`}

@@ -174,7 +174,7 @@ header .stats .highlight {
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--fc1) 6%, transparent) 33%,
-    color-mix(in srgb, var(--fc3) 6%, transparent)
+    color-mix(in srgb, var(--fc1) 3%, transparent)
   );
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -187,7 +187,7 @@ header .stats .highlight {
   inset: 0;
   border-radius: 16px;
   padding: 2px;
-  background: linear-gradient(135deg, var(--fc1), var(--fc2) 50%, var(--fc3));
+  background: linear-gradient(135deg, var(--fc1), var(--fc2) 50%, var(--fc1));
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -200,7 +200,7 @@ header .stats .highlight {
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--fc1) 40%, transparent),
-    color-mix(in srgb, var(--fc3) 40%, transparent)
+    color-mix(in srgb, var(--fc2) 25%, transparent)
   );
 }
 
@@ -209,7 +209,7 @@ header .stats .highlight {
 }
 
 .card.owned.flagged > .sticker-image .placeholder {
-  background: linear-gradient(180deg, var(--fc1), var(--fc3));
+  background: linear-gradient(180deg, var(--fc1), var(--fc2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -437,6 +437,32 @@ header .stats .highlight {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
   color: #fff;
+}
+
+.ownership-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ownership-tabs button {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 100px;
+  background: transparent;
+  color: #71717a;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.ownership-tabs button.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
 }
 
 .country-grid {
