@@ -3,15 +3,20 @@ import { useEffect, useState } from 'react'
 function App() {
   const [stickers, setStickers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [claiming, setClaiming] = useState(new Set())
+  const [userStickerIds, setUserStickerIds] = useState({})
   const [groups, setGroups] = useState([])
   const [activeGroup, setActiveGroup] = useState('all')
 
   useEffect(() => {
     Promise.all([
       fetch('/api/stickers/').then(r => r.json()),
-      fetch('/api/countries/').then(r => r.json()),
-    ]).then(([s]) => {
+      fetch('/api/user-stickers/').then(r => r.json()),
+    ]).then(([s, us]) => {
       setStickers(s)
+      const map = {}
+      us.forEach(us => { map[us.sticker.id] = us.id })
+      setUserStickerIds(map)
       const gs = {}
       s.forEach(st => {
         const g = st.country ? `Group ${st.country.group}` : st.name.startsWith('CC') ? 'Coca-Cola' : st.name === '00' ? 'Panini' : 'FWC'
@@ -22,6 +27,32 @@ function App() {
       setLoading(false)
     })
   }, [])
+
+  function toggleSticker(sticker) {
+    if (claiming.has(sticker.id)) return
+    setClaiming(prev => new Set(prev).add(sticker.id))
+
+    if (sticker.owned) {
+      fetch(`/api/user-stickers/${userStickerIds[sticker.id]}/`, { method: 'DELETE' })
+        .then(() => {
+          setUserStickerIds(prev => { const n = { ...prev }; delete n[sticker.id]; return n })
+          setStickers(prev => prev.map(s => s.id === sticker.id ? { ...s, owned: false } : s))
+        })
+        .finally(() => setClaiming(prev => { const n = new Set(prev); n.delete(sticker.id); return n }))
+    } else {
+      fetch('/api/user-stickers/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sticker_id: sticker.id }),
+      })
+        .then(r => r.json())
+        .then(us => {
+          setUserStickerIds(prev => ({ ...prev, [sticker.id]: us.id }))
+          setStickers(prev => prev.map(s => s.id === sticker.id ? { ...s, owned: true } : s))
+        })
+        .finally(() => setClaiming(prev => { const n = new Set(prev); n.delete(sticker.id); return n }))
+    }
+  }
 
   const sectionOrder = ['Panini', 'FWC', ...'ABCDEFGHIJKL'.split('').map(l => `Group ${l}`), 'Coca-Cola']
 
@@ -44,6 +75,7 @@ function App() {
         </div>
         <div className="stats">
           <span>{stickers.length} stickers</span>
+          <span className="highlight">{stickers.filter(s => s.owned).length} owned</span>
         </div>
       </header>
 
@@ -60,7 +92,8 @@ function App() {
 
       <div className="grid">
         {displayed.map(sticker => (
-          <div key={sticker.id} className="card">
+          <div key={sticker.id} className={`card${sticker.owned ? ' owned' : ''}${claiming.has(sticker.id) ? ' claiming' : ''}`}
+               onClick={() => toggleSticker(sticker)}>
             <div className="sticker-image">
               <div className="placeholder">
                 {sticker.country ? sticker.country.code : sticker.name.startsWith('CC') ? 'CC' : sticker.name}
@@ -70,7 +103,9 @@ function App() {
               <span className="number">{sticker.name}</span>
               {sticker.country && <span className="name">{sticker.country.name}</span>}
               {sticker.country && <span className="collection">Group {sticker.country.group}</span>}
-              <span className="badge missing">○ Missing</span>
+              <span className={`badge ${sticker.owned ? 'owned' : 'missing'}`}>
+                {sticker.owned ? '✓ Owned' : '○ Missing'}
+              </span>
             </div>
           </div>
         ))}

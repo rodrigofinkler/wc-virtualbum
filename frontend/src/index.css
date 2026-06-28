@@ -132,14 +132,19 @@ header .stats .highlight {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
 
-.card.acquired {
+.card.owned {
   border-color: rgba(34, 197, 94, 0.3);
   background: rgba(34, 197, 94, 0.03);
 }
 
-.card.acquired::after {
+.card.owned::after {
   background: linear-gradient(180deg, transparent 60%, rgba(34, 197, 94, 0.06));
   opacity: 1;
+}
+
+.card.claiming {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .sticker-image {
@@ -225,7 +230,7 @@ header .stats .highlight {
   align-self: flex-start;
 }
 
-.badge.acquired {
+.badge.owned {
   color: #22c55e;
   background: rgba(34, 197, 94, 0.1);
 }
