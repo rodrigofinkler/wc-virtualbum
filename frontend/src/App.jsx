@@ -274,6 +274,19 @@ function Page() {
       })
   }
 
+  const countryOrder = useMemo(() => {
+    const seen = new Set()
+    const order = []
+    stickers.forEach((s) => {
+      const code = s.country?.code
+      if (code && !seen.has(code)) {
+        seen.add(code)
+        order.push(code)
+      }
+    })
+    return order
+  }, [stickers])
+
   const navOrder = useMemo(() => {
     const items = [{ slug: '', label: 'All' }]
     sectionOrder.forEach((s) => {
@@ -282,11 +295,9 @@ function Page() {
         items.push({ slug: groupToSlug[s], label: s, count: g.length })
       }
     })
-    Object.keys(flags)
-      .sort()
-      .forEach((c) => {
-        items.push({ slug: `country/${c.toLowerCase()}`, label: c, emoji: flags[c] })
-      })
+    countryOrder.forEach((c) => {
+      items.push({ slug: `country/${c.toLowerCase()}`, label: c, emoji: flags[c] })
+    })
     return items
   }, [groups])
 
