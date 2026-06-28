@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 
 const sectionOrder = [
   'Panini',
@@ -111,6 +112,29 @@ const flagColors = {
   GOLD: ['#BF953F', '#FCF6B5', '#B38728'],
 }
 
+const slugToGroup = {
+  panini: 'Panini',
+  fwc: 'FWC',
+  a: 'Group A',
+  b: 'Group B',
+  c: 'Group C',
+  d: 'Group D',
+  e: 'Group E',
+  f: 'Group F',
+  g: 'Group G',
+  h: 'Group H',
+  i: 'Group I',
+  j: 'Group J',
+  k: 'Group K',
+  l: 'Group L',
+  cc: 'Coca-Cola',
+}
+
+const groupToSlug = {}
+for (const [slug, group] of Object.entries(slugToGroup)) {
+  groupToSlug[group] = slug
+}
+
 function flagEmoji(code) {
   return flags[code] || ''
 }
@@ -141,12 +165,33 @@ function groupStickers(stickers) {
   return gs
 }
 
+function resolveRoute(slug) {
+  if (!slug) return { type: 'all' }
+  if (slugToGroup[slug]) return { type: 'group', group: slugToGroup[slug] }
+  const upper = slug.toUpperCase()
+  if (flags[upper]) return { type: 'country', code: upper }
+  return { type: 'all' }
+}
+
 function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Page />} />
+        <Route path="/:slug" element={<Page />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+function Page() {
+  const { slug } = useParams()
+  const navigate = useNavigate()
+
   const [stickers, setStickers] = useState([])
   const [loading, setLoading] = useState(true)
   const [claiming, setClaiming] = useState(new Set())
   const [userStickerIds, setUserStickerIds] = useState({})
-  const [activeGroup, setActiveGroup] = useState('all')
   const [search, setSearch] = useState('')
 
   useEffect(() => {
@@ -163,6 +208,14 @@ function App() {
       setLoading(false)
     })
   }, [])
+
+  const route = useMemo(() => resolveRoute(slug), [slug])
+
+  useEffect(() => {
+    if (slug && route.type === 'all') {
+      navigate('/', { replace: true })
+    }
+  }, [slug, route, navigate])
 
   const groups = useMemo(() => groupStickers(stickers), [stickers])
 
@@ -215,11 +268,38 @@ function App() {
       })
   }
 
-  const filtered = search
+  const navOrder = useMemo(() => {
+    const items = [{ slug: '', label: 'All' }]
+    sectionOrder.forEach((s) => {
+      const g = groups[s]
+      if (g) {
+        items.push({ slug: groupToSlug[s], label: s, count: g.length })
+      }
+    })
+    Object.keys(flags)
+      .sort()
+      .forEach((code) => {
+        items.push({ slug: code.toLowerCase(), label: code, emoji: flags[code] })
+      })
+    return items
+  }, [groups])
+
+  const currentIdx = navOrder.findIndex((item) => (slug ? item.slug === slug : item.slug === ''))
+  const prev = currentIdx > 0 ? navOrder[currentIdx - 1] : null
+  const next = currentIdx < navOrder.length - 1 ? navOrder[currentIdx + 1] : null
+
+  const displayed = search
     ? stickers.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()))
-    : activeGroup === 'all'
-      ? sectionOrder.flatMap((s) => groups[s] || [])
-      : groups[activeGroup] || []
+    : route.type === 'country'
+      ? stickers.filter((s) => s.country?.code === route.code)
+      : route.type === 'group'
+        ? groups[route.group] || []
+        : sectionOrder.flatMap((s) => groups[s] || [])
+
+  function goTo(slug) {
+    setSearch('')
+    navigate(`/${slug}`)
+  }
 
   if (loading)
     return (
@@ -233,11 +313,15 @@ function App() {
     <div className="container">
       <header>
         <div className="title">
-          <h1>FIFA World Cup 26</h1>
+          <h1>
+            <Link to="/" className="home-link">
+              FIFA World Cup 26
+            </Link>
+          </h1>
         </div>
         <div className="stats">
-          <span>{stickers.length} stickers</span>
-          <span className="highlight">{stickers.filter((s) => s.owned).length} owned</span>
+          <span>{displayed.length} stickers</span>
+          <span className="highlight">{displayed.filter((s) => s.owned).length} owned</span>
         </div>
       </header>
 
@@ -249,13 +333,7 @@ function App() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button
-          onClick={() => {
-            setActiveGroup('all')
-            setSearch('')
-          }}
-          className={activeGroup === 'all' && !search ? 'active' : ''}
-        >
+        <button onClick={() => goTo('')} className={!slug ? 'active' : ''}>
           All
         </button>
         {sectionOrder
@@ -263,16 +341,45 @@ function App() {
           .map((s) => (
             <button
               key={s}
-              onClick={() => setActiveGroup(s)}
-              className={activeGroup === s ? 'active' : ''}
+              onClick={() => goTo(groupToSlug[s])}
+              className={route.type === 'group' && route.group === s ? 'active' : ''}
             >
               {s} <small>({groups[s].length})</small>
             </button>
           ))}
       </div>
 
+      {slug && !search && (
+        <div className="nav-row">
+          <button
+            className="nav-arrow"
+            onClick={() => goTo(prev.slug)}
+            disabled={!prev}
+            style={{ visibility: prev ? 'visible' : 'hidden' }}
+          >
+            ← {prev?.emoji || ''} {prev?.label || ''}
+          </button>
+          <div className="nav-title">
+            {route.type === 'country' && <span className="nav-emoji">{flags[route.code]}</span>}
+            {route.type === 'country'
+              ? route.code
+              : route.type === 'group'
+                ? route.group
+                : 'All Stickers'}
+          </div>
+          <button
+            className="nav-arrow"
+            onClick={() => goTo(next.slug)}
+            disabled={!next}
+            style={{ visibility: next ? 'visible' : 'hidden' }}
+          >
+            {next?.emoji || ''} {next?.label || ''} →
+          </button>
+        </div>
+      )}
+
       <div className="grid">
-        {filtered.map((sticker) => {
+        {displayed.map((sticker) => {
           const flagKey =
             sticker.owned &&
             (sticker.country?.code ||
