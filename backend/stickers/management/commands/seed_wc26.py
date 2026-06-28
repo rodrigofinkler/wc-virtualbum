@@ -1,19 +1,56 @@
 from django.core.management.base import BaseCommand
+
 from stickers.models import Country, Sticker
 
 COUNTRIES = [
-    ("Mexico", "MEX", "A"), ("South Africa", "RSA", "A"), ("Korea Republic", "KOR", "A"), ("Czechia", "CZE", "A"),
-    ("Canada", "CAN", "B"), ("Bosnia-Herzegovina", "BIH", "B"), ("Qatar", "QAT", "B"), ("Switzerland", "SUI", "B"),
-    ("Brazil", "BRA", "C"), ("Morocco", "MAR", "C"), ("Haiti", "HAI", "C"), ("Scotland", "SCO", "C"),
-    ("USA", "USA", "D"), ("Paraguay", "PAR", "D"), ("Australia", "AUS", "D"), ("Türkiye", "TUR", "D"),
-    ("Germany", "GER", "E"), ("Curaçao", "CUW", "E"), ("Côte d'Ivoire", "CIV", "E"), ("Ecuador", "ECU", "E"),
-    ("Netherlands", "NED", "F"), ("Japan", "JPN", "F"), ("Sweden", "SWE", "F"), ("Tunisia", "TUN", "F"),
-    ("Belgium", "BEL", "G"), ("Egypt", "EGY", "G"), ("IR Iran", "IRN", "G"), ("New Zealand", "NZL", "G"),
-    ("Spain", "ESP", "H"), ("Cabo Verde", "CPV", "H"), ("Saudi Arabia", "KSA", "H"), ("Uruguay", "URU", "H"),
-    ("France", "FRA", "I"), ("Senegal", "SEN", "I"), ("Iraq", "IRQ", "I"), ("Norway", "NOR", "I"),
-    ("Argentina", "ARG", "J"), ("Algeria", "ALG", "J"), ("Austria", "AUT", "J"), ("Jordan", "JOR", "J"),
-    ("Portugal", "POR", "K"), ("Congo DR", "COD", "K"), ("Uzbekistan", "UZB", "K"), ("Colombia", "COL", "K"),
-    ("England", "ENG", "L"), ("Croatia", "CRO", "L"), ("Ghana", "GHA", "L"), ("Panama", "PAN", "L"),
+    ("Mexico", "MEX", "A"),
+    ("South Africa", "RSA", "A"),
+    ("Korea Republic", "KOR", "A"),
+    ("Czechia", "CZE", "A"),
+    ("Canada", "CAN", "B"),
+    ("Bosnia-Herzegovina", "BIH", "B"),
+    ("Qatar", "QAT", "B"),
+    ("Switzerland", "SUI", "B"),
+    ("Brazil", "BRA", "C"),
+    ("Morocco", "MAR", "C"),
+    ("Haiti", "HAI", "C"),
+    ("Scotland", "SCO", "C"),
+    ("USA", "USA", "D"),
+    ("Paraguay", "PAR", "D"),
+    ("Australia", "AUS", "D"),
+    ("Türkiye", "TUR", "D"),
+    ("Germany", "GER", "E"),
+    ("Curaçao", "CUW", "E"),
+    ("Côte d'Ivoire", "CIV", "E"),
+    ("Ecuador", "ECU", "E"),
+    ("Netherlands", "NED", "F"),
+    ("Japan", "JPN", "F"),
+    ("Sweden", "SWE", "F"),
+    ("Tunisia", "TUN", "F"),
+    ("Belgium", "BEL", "G"),
+    ("Egypt", "EGY", "G"),
+    ("IR Iran", "IRN", "G"),
+    ("New Zealand", "NZL", "G"),
+    ("Spain", "ESP", "H"),
+    ("Cabo Verde", "CPV", "H"),
+    ("Saudi Arabia", "KSA", "H"),
+    ("Uruguay", "URU", "H"),
+    ("France", "FRA", "I"),
+    ("Senegal", "SEN", "I"),
+    ("Iraq", "IRQ", "I"),
+    ("Norway", "NOR", "I"),
+    ("Argentina", "ARG", "J"),
+    ("Algeria", "ALG", "J"),
+    ("Austria", "AUT", "J"),
+    ("Jordan", "JOR", "J"),
+    ("Portugal", "POR", "K"),
+    ("Congo DR", "COD", "K"),
+    ("Uzbekistan", "UZB", "K"),
+    ("Colombia", "COL", "K"),
+    ("England", "ENG", "L"),
+    ("Croatia", "CRO", "L"),
+    ("Ghana", "GHA", "L"),
+    ("Panama", "PAN", "L"),
 ]
 
 
@@ -60,6 +97,8 @@ class Command(BaseCommand):
             Sticker.objects.create(name=f"CC{i:02d}")
 
         total += 1 + 9 + 11 + 14  # non-country stickers
-        self.stdout.write(self.style.SUCCESS(
-            f"Created {Country.objects.count()} countries and {Sticker.objects.count()} stickers"
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Created {Country.objects.count()} countries and {Sticker.objects.count()} stickers"
+            )
+        )

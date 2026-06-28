@@ -5,7 +5,13 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   background: #0a0a0f;
   color: #e4e4e7;
   min-height: 100vh;
@@ -260,13 +266,27 @@ header .stats .highlight {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 640px) {
-  .container { padding: 20px 16px; }
-  header { flex-direction: column; align-items: flex-start; }
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .info { padding: 10px; }
-  .info .name { font-size: 13px; }
+  .container {
+    padding: 20px 16px;
+  }
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .info {
+    padding: 10px;
+  }
+  .info .name {
+    font-size: 13px;
+  }
 }

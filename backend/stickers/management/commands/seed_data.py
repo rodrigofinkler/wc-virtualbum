@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from stickers.models import Sticker
 
+from stickers.models import Sticker
 
 DEMO_STICKERS = [
     {"name": "Lionel Messi", "collection": "FIFA World Cup 2022", "number": "1"},

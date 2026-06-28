@@ -1,0 +1,29 @@
+{
+  "name": "wc-virtualbum",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint frontend/src/ && ruff check backend/",
+    "format": "prettier --write '**/*.{js,jsx,json,css,md}' && ruff format backend/",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,css,md}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "backend/**/*.py": [
+      "ruff check --fix",
+      "ruff format"
+    ]
+  }
+}

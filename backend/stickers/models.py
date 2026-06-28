@@ -16,9 +16,7 @@ class Country(models.Model):
 
 class Sticker(models.Model):
     name = models.CharField(max_length=10)
-    country = models.ForeignKey(
-        Country, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
