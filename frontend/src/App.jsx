@@ -108,6 +108,7 @@ const flagColors = {
   USA: ['#B22234', '#FFFFFF', '#3C3B6E'],
   UZB: ['#0099B5', '#FFFFFF', '#1EB53A'],
   COKE: ['#F40000', '#000000', '#F40000'],
+  GOLD: ['#BF953F', '#FCF6B5', '#B38728'],
 }
 
 function flagEmoji(code) {
@@ -274,7 +275,12 @@ function App() {
         {filtered.map((sticker) => {
           const flagKey =
             sticker.owned &&
-            (sticker.country?.code || (sticker.name.startsWith('CC') ? 'COKE' : null))
+            (sticker.country?.code ||
+              (sticker.name.startsWith('CC')
+                ? 'COKE'
+                : sticker.name === '00' || sticker.name.startsWith('FWC')
+                  ? 'GOLD'
+                  : null))
           return (
             <div
               key={sticker.id}

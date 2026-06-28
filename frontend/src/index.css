@@ -317,6 +317,11 @@ header .stats .highlight {
   background: rgba(34, 197, 94, 0.1);
 }
 
+.flagged .badge.owned {
+  color: var(--fc1);
+  background: color-mix(in srgb, var(--fc1) 15%, transparent);
+}
+
 .badge.missing {
   color: #71717a;
   background: rgba(255, 255, 255, 0.04);
