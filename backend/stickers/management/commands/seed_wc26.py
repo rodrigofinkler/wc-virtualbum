@@ -74,29 +74,25 @@ class Command(BaseCommand):
         # 2. sticker 00 – dedicated Panini sticker
         Sticker.objects.create(name="00")
 
-        # 3. FWC00–FWC08 (9 stickers)
-        for i in range(9):
-            Sticker.objects.create(name=f"FWC0{i}")
+        # 3. FWC stickers – FWC1 to FWC19 (19 stickers)
+        for i in range(1, 20):
+            Sticker.objects.create(name=f"FWC{i}")
 
-        # 4. country stickers – each country 20 stickers (CODE01–CODE20)
+        # 4. country stickers – each country 20 stickers (CODE1–CODE20)
         for code in [c[1] for c in COUNTRIES]:
             country = country_map[code]
             for i in range(1, 21):
                 Sticker.objects.create(
-                    name=f"{code}{i:02d}",
+                    name=f"{code}{i}",
                     country=country,
                 )
                 total += 1
 
-        # 5. FWC09–FWC19 (11 stickers)
-        for i in range(9, 20):
-            Sticker.objects.create(name=f"FWC{i:02d}")
-
-        # 6. CC01–CC14 (14 Coca-Cola stickers)
+        # 5. CC01–CC14 (14 Coca-Cola stickers)
         for i in range(1, 15):
             Sticker.objects.create(name=f"CC{i:02d}")
 
-        total += 1 + 9 + 11 + 14  # non-country stickers
+        total += 1 + 19 + 14  # non-country stickers
         self.stdout.write(
             self.style.SUCCESS(
                 f"Created {Country.objects.count()} countries and {Sticker.objects.count()} stickers"
