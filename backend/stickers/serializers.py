@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Country, Sticker, User, UserSticker
+from .models import Country, Sticker, UserSticker
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -19,13 +19,10 @@ class StickerSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "country", "country_id", "owned"]
 
     def get_owned(self, obj):
-        return UserSticker.objects.filter(sticker=obj).exists()
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "name", "email"]
+        user = self.context["request"].user
+        if user.is_authenticated:
+            return UserSticker.objects.filter(sticker=obj, user=user).exists()
+        return False
 
 
 class UserStickerSerializer(serializers.ModelSerializer):
@@ -38,7 +35,7 @@ class UserStickerSerializer(serializers.ModelSerializer):
         read_only_fields = ["added_at"]
 
     def create(self, validated_data):
-        user = User.objects.first()
+        user = self.context["request"].user
         obj, _ = UserSticker.objects.get_or_create(
             user=user,
             sticker_id=validated_data["sticker_id"],

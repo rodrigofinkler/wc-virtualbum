@@ -9,6 +9,9 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { AuthProvider, useAuth } from './AuthContext'
+import LoginPage from './LoginPage'
+
 const sectionOrder = [
   'Panini',
   'FWC',
@@ -187,9 +190,11 @@ function resolveRoute(slug, code) {
 function CountryList() {
   const [countries, setCountries] = useState([])
   const [loading, setLoading] = useState(true)
+  const { authHeaders } = useAuth()
+  const headers = authHeaders()
 
   useEffect(() => {
-    fetch('/api/countries/')
+    fetch('/api/countries/', { headers })
       .then((r) => r.json())
       .then((data) => {
         setCountries(data)
@@ -237,14 +242,32 @@ function CountryList() {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Page />} />
-        <Route path="/country" element={<CountryList />} />
-        <Route path="/country/:code" element={<Page />} />
-        <Route path="/:slug" element={<Page />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<ProtectedPage />} />
+          <Route path="/country" element={<ProtectedPage />} />
+          <Route path="/country/:code" element={<ProtectedPage />} />
+          <Route path="/:slug" element={<ProtectedPage />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
+}
+
+function ProtectedPage() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="loading">
+        <div className="spinner" /> Checking authentication…
+      </div>
+    )
+  }
+
+  if (!user) return <LoginPage />
+
+  return <AuthenticatedApp />
 }
 
 function BackToTop() {
@@ -267,12 +290,13 @@ function BackToTop() {
   )
 }
 
-function Page() {
+function AuthenticatedApp() {
   const params = useParams()
   const { pathname } = useLocation()
   const slug = params.slug
   const code = params.code
   const navigate = useNavigate()
+  const { authHeaders, logout, user } = useAuth()
 
   const [stickers, setStickers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -281,10 +305,12 @@ function Page() {
   const [search, setSearch] = useState('')
   const [ownership, setOwnership] = useState('all')
 
+  const headers = authHeaders()
+
   useEffect(() => {
     Promise.all([
-      fetch('/api/stickers/').then((r) => r.json()),
-      fetch('/api/user-stickers/').then((r) => r.json()),
+      fetch('/api/stickers/', { headers }).then((r) => r.json()),
+      fetch('/api/user-stickers/', { headers }).then((r) => r.json()),
     ]).then(([s, us]) => {
       setStickers(s)
       const map = {}
@@ -323,10 +349,10 @@ function Page() {
     }
 
     const request = wasOwned
-      ? fetch(`/api/user-stickers/${prevUserStickerId}/`, { method: 'DELETE' })
+      ? fetch(`/api/user-stickers/${prevUserStickerId}/`, { method: 'DELETE', headers })
       : fetch('/api/user-stickers/', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { ...headers, 'Content-Type': 'application/json' },
           body: JSON.stringify({ sticker_id: sticker.id }),
         })
           .then((r) => r.json())
@@ -415,6 +441,8 @@ function Page() {
 
   if (!route) return null
 
+  if (pathname === '/country') return <CountryList />
+
   return (
     <div className="container">
       <header>
@@ -428,6 +456,9 @@ function Page() {
         <div className="stats">
           <span>{displayed.length} stickers</span>
           <span className="highlight">{displayed.filter((s) => s.owned).length} owned</span>
+          <button className="logout-btn" onClick={logout} title="Sign out">
+            Sign out
+          </button>
         </div>
       </header>
 

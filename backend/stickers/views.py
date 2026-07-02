@@ -1,6 +1,11 @@
+from django.contrib.auth import authenticate, logout
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, viewsets
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
-from .models import Country, Sticker, User, UserSticker
+from .models import Country, Sticker, UserSticker
 from .serializers import CountrySerializer, StickerSerializer, UserStickerSerializer
 
 
@@ -17,10 +22,44 @@ class StickerViewSet(viewsets.ReadOnlyModelViewSet):
 class UserStickerViewSet(viewsets.ModelViewSet):
     queryset = UserSticker.objects.select_related("sticker__country", "user").all()
     serializer_class = UserStickerSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user = User.objects.first()
-        if user:
-            return self.queryset.filter(user=user)
-        return self.queryset.none()
+        return self.queryset.filter(user=self.request.user)
+
+
+@api_view(["POST"])
+@csrf_exempt
+@permission_classes([permissions.AllowAny])
+def login_view(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response(
+            {
+                "token": token.key,
+                "user": {"id": user.id, "username": user.username, "email": user.email},
+            }
+        )
+    return Response({"error": "Invalid credentials"}, status=401)
+
+
+@api_view(["POST"])
+def logout_view(request):
+    logout(request)
+    return Response({"ok": True})
+
+
+@api_view(["GET"])
+def me_view(request):
+    if request.user.is_authenticated:
+        return Response(
+            {
+                "id": request.user.id,
+                "username": request.user.username,
+                "email": request.user.email,
+            }
+        )
+    return Response({"error": "Not authenticated"}, status=401)
