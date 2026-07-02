@@ -53,6 +53,12 @@ def logout_view(request):
 
 
 @api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def status_view(request):
+    return Response({"ok": True})
+
+
+@api_view(["GET"])
 def me_view(request):
     if request.user.is_authenticated:
         return Response(

@@ -8,6 +8,7 @@ from .views import (
     login_view,
     logout_view,
     me_view,
+    status_view,
 )
 
 router = DefaultRouter()
@@ -20,4 +21,5 @@ urlpatterns = [
     path("auth/login/", login_view, name="login"),
     path("auth/logout/", logout_view, name="logout"),
     path("auth/me/", me_view, name="me"),
+    path("status/", status_view, name="status"),
 ]
