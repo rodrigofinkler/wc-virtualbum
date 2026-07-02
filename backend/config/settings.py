@@ -21,7 +21,10 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-key-change
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,backend").split(",")
+_default_hosts = "localhost,127.0.0.1,backend,.vercel.app"
+ALLOWED_HOSTS = (os.environ.get("DJANGO_ALLOWED_HOSTS") or _default_hosts).split(",")
+if os.environ.get("VERCEL_URL"):
+    ALLOWED_HOSTS.append(os.environ["VERCEL_URL"])
 
 INSTALLED_APPS = [
     "django.contrib.admin",
