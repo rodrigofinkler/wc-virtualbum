@@ -306,6 +306,8 @@ function AuthenticatedApp() {
   const [search, setSearch] = useState('')
   const [ownership, setOwnership] = useState('all')
   const [showExport, setShowExport] = useState(false)
+  const [minimapSize, setMinimapSize] = useState('small')
+  const minimapSizes = { small: 8, medium: 16, large: 24 }
 
   const headers = authHeaders()
 
@@ -491,6 +493,7 @@ function AuthenticatedApp() {
   if (pathname === '/country') return <CountryList />
 
   if (route.type === 'minimap') {
+    const size = minimapSizes[minimapSize]
     return (
       <div className="container">
         <header>
@@ -509,7 +512,18 @@ function AuthenticatedApp() {
             </Link>
           </div>
         </header>
-        <MiniMap stickers={stickers} />
+        <div className="minimap-sizes">
+          {['small', 'medium', 'large'].map((s) => (
+            <button
+              key={s}
+              className={minimapSize === s ? 'active' : ''}
+              onClick={() => setMinimapSize(s)}
+            >
+              {s.charAt(0).toUpperCase() + s.slice(1)} ({minimapSizes[s]}px)
+            </button>
+          ))}
+        </div>
+        <MiniMap stickers={stickers} size={size} />
       </div>
     )
   }
@@ -713,10 +727,15 @@ function ExportModal({ text, onClose }) {
   )
 }
 
-function MiniMap({ stickers }) {
+function MiniMap({ stickers, size }) {
   const cols = 32
-  const size = 8
   const gap = 2
+
+  function tooltip(s) {
+    if (s.country) return `${s.name} – ${s.country.name}`
+    if (s.name === '00') return '00 – Panini'
+    return s.name
+  }
 
   return (
     <div
@@ -745,11 +764,13 @@ function MiniMap({ stickers }) {
         return (
           <div
             key={s.id}
+            title={tooltip(s)}
             style={{
               width: size,
               height: size,
-              borderRadius: 1,
+              borderRadius: size <= 8 ? 1 : 2,
               background: bg,
+              cursor: 'default',
             }}
           />
         )
