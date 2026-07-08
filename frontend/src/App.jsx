@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   BrowserRouter,
   Link,
@@ -304,6 +304,7 @@ function AuthenticatedApp() {
   const [userStickerIds, setUserStickerIds] = useState({})
   const [search, setSearch] = useState('')
   const [ownership, setOwnership] = useState('all')
+  const [showExport, setShowExport] = useState(false)
 
   const headers = authHeaders()
 
@@ -409,6 +410,36 @@ function AuthenticatedApp() {
     return order
   }, [stickers])
 
+  const exportText = useMemo(() => {
+    const missing = stickers.filter((s) => !s.owned)
+    const lines = []
+
+    const fwc = missing.filter((s) => s.name.startsWith('FWC'))
+    if (fwc.length) {
+      lines.push(`FWC: ${fwc.map((s) => s.name).join(', ')}`)
+    }
+
+    const byCountry = {}
+    missing.forEach((s) => {
+      if (!s.country) return
+      if (!byCountry[s.country.code]) byCountry[s.country.code] = []
+      byCountry[s.country.code].push(s)
+    })
+    countryOrder.forEach((code) => {
+      const country = byCountry[code]
+      if (!country) return
+      const emoji = flags[code] || ''
+      lines.push(`${emoji} ${code}: ${country.map((s) => s.name).join(', ')}`)
+    })
+
+    const cc = missing.filter((s) => s.name.startsWith('CC'))
+    if (cc.length) {
+      lines.push(`CC: ${cc.map((s) => s.name).join(', ')}`)
+    }
+
+    return lines.join('\n')
+  }, [stickers, countryOrder])
+
   const navOrder = useMemo(() => {
     const items = [{ slug: '', label: 'All' }]
     sectionOrder.forEach((s) => {
@@ -473,6 +504,13 @@ function AuthenticatedApp() {
           <span className="highlight">{displayed.filter((s) => s.owned).length} owned</span>
           <button className="logout-btn" onClick={logout} title="Sign out">
             Sign out
+          </button>
+          <button
+            className="export-btn"
+            onClick={() => setShowExport(true)}
+            title="Export missing stickers list"
+          >
+            Export Missing
           </button>
         </div>
       </header>
@@ -591,6 +629,58 @@ function AuthenticatedApp() {
       </div>
 
       <BackToTop />
+
+      {showExport && <ExportModal text={exportText} onClose={() => setShowExport(false)} />}
+    </div>
+  )
+}
+
+function ExportModal({ text, onClose }) {
+  const [copied, setCopied] = useState(false)
+  const textRef = useRef(null)
+
+  function handleCopy() {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Missing Stickers</h2>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+        <textarea
+          ref={textRef}
+          className="modal-text"
+          readOnly
+          value={text}
+          onClick={(e) => e.target.select()}
+        />
+        <div className="modal-footer">
+          <button className="modal-copy-btn" onClick={handleCopy}>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
