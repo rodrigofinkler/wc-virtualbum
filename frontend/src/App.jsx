@@ -332,6 +332,21 @@ function AuthenticatedApp() {
 
   const groups = useMemo(() => groupStickers(stickers), [stickers])
 
+  const groupFlags = useMemo(() => {
+    const map = {}
+    stickers.forEach((s) => {
+      if (!s.country) return
+      const g = `Group ${s.country.group}`
+      if (!map[g]) map[g] = new Set()
+      map[g].add(s.country.code)
+    })
+    const result = {}
+    for (const [g, codes] of Object.entries(map)) {
+      result[g] = [...codes].map((c) => flagEmoji(c)).join(' ')
+    }
+    return result
+  }, [stickers])
+
   function toggleSticker(sticker) {
     if (claiming.has(sticker.id)) return
 
@@ -501,6 +516,7 @@ function AuthenticatedApp() {
               onClick={() => goTo(groupToSlug[s])}
               className={route.type === 'group' && route.group === s ? 'active' : ''}
             >
+              {groupFlags[s] ? `${groupFlags[s]} ` : ''}
               {s} <small>({groups[s].length})</small>
             </button>
           ))}
