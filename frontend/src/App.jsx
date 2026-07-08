@@ -183,6 +183,7 @@ function resolveRoute(slug, code) {
     return null
   }
   if (!slug) return { type: 'all' }
+  if (slug === 'minimap') return { type: 'minimap' }
   if (slugToGroup[slug]) return { type: 'group', group: slugToGroup[slug] }
   return null
 }
@@ -489,6 +490,30 @@ function AuthenticatedApp() {
 
   if (pathname === '/country') return <CountryList />
 
+  if (route.type === 'minimap') {
+    return (
+      <div className="container">
+        <header>
+          <div className="title">
+            <h1>
+              <Link to="/" className="home-link">
+                FIFA World Cup 26
+              </Link>
+            </h1>
+          </div>
+          <div className="stats">
+            <span>{stickers.length} stickers</span>
+            <span className="highlight">{stickers.filter((s) => s.owned).length} owned</span>
+            <Link to="/" className="header-btn">
+              ← Album
+            </Link>
+          </div>
+        </header>
+        <MiniMap stickers={stickers} />
+      </div>
+    )
+  }
+
   return (
     <div className="container">
       <header>
@@ -512,6 +537,9 @@ function AuthenticatedApp() {
           >
             Export Missing
           </button>
+          <Link to="/minimap" className="header-btn">
+            Minimap
+          </Link>
         </div>
       </header>
 
@@ -681,6 +709,51 @@ function ExportModal({ text, onClose }) {
           </button>
         </div>
       </div>
+    </div>
+  )
+}
+
+function MiniMap({ stickers }) {
+  const cols = 32
+  const size = 8
+  const gap = 2
+
+  return (
+    <div
+      className="minimap"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cols}, ${size}px)`,
+        gap: `${gap}px`,
+        width: 'fit-content',
+      }}
+    >
+      {stickers.map((s) => {
+        let bg
+        if (!s.owned) {
+          bg = '#1a1a1f'
+        } else if (s.country) {
+          const c = flagColors[s.country.code]
+          bg = c ? c[0] : '#22c55e'
+        } else if (s.name.startsWith('CC')) {
+          bg = flagColors.COKE[0]
+        } else if (s.name === '00' || s.name.startsWith('FWC')) {
+          bg = flagColors.GOLD[0]
+        } else {
+          bg = '#22c55e'
+        }
+        return (
+          <div
+            key={s.id}
+            style={{
+              width: size,
+              height: size,
+              borderRadius: 1,
+              background: bg,
+            }}
+          />
+        )
+      })}
     </div>
   )
 }
