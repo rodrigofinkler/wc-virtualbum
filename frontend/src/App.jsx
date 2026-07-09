@@ -686,7 +686,7 @@ function AuthenticatedApp({ shared = false }) {
               onClick={() => toggleSticker(sticker)}
               title={
                 sticker.owned && userStickerIds[sticker.id]
-                  ? `Claimed on ${new Date(userStickerIds[sticker.id].addedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                  ? `Claimed on ${new Date(userStickerIds[sticker.id].addedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })}`
                   : undefined
               }
             >
