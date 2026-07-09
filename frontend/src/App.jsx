@@ -529,9 +529,9 @@ function AuthenticatedApp({ shared = false, username }) {
 
   if (error)
     return (
-      <div className="loading" style={{ flexDirection: 'column', gap: 8 }}>
-        <div style={{ fontSize: 32 }}>👤</div>
-        <div>User not found</div>
+      <div className="loading" style={{ flexDirection: 'column', gap: 16 }}>
+        <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '0.05em' }}>USER NOT FOUND</div>
+        <img src="/roboto.gif" alt="" style={{ width: 200, height: 'auto' }} />
       </div>
     )
 
