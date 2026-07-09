@@ -10,4 +10,5 @@ dependencies = [
     "django-cors-headers>=4.7",
     "dj-database-url>=0.5",
     "whitenoise>=6.0",
+    "python-dotenv>=1.0",
 ]

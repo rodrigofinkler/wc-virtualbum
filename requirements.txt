@@ -20,6 +20,8 @@ psycopg==3.3.4
     # via backend
 psycopg-binary==3.3.4 ; implementation_name != 'pypy'
     # via psycopg
+python-dotenv==1.2.2
+    # via backend
 sqlparse==0.5.5
     # via django
 tzdata==2026.2 ; sys_platform == 'win32'
