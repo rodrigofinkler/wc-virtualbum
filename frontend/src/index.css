@@ -856,31 +856,64 @@ header .stats .highlight {
 
 @media (max-width: 640px) {
   .container {
-    padding: 20px 16px;
+    padding: 16px 12px;
   }
   header {
     flex-direction: column;
     align-items: flex-start;
   }
+  header .title h1 {
+    font-size: 20px;
+  }
   .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .card {
+    border-radius: 8px;
+  }
+  .card.owned.flagged::before {
+    border-radius: 8px;
+  }
+  .sticker-image {
+    aspect-ratio: 1;
+  }
+  .sticker-image .placeholder {
+    font-size: 17px;
+    font-weight: 800;
+    color: #d4d4d8;
+  }
+  .grid .sticker-image::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    z-index: 1;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+  }
+  .card.owned .sticker-image::after {
+    background: #22c55e;
+    box-shadow: 0 0 4px rgba(34, 197, 94, 0.6);
+  }
+  .card:not(.owned) .sticker-image::after {
+    background: #ef4444;
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
   }
   .info {
-    padding: 10px;
-  }
-  .info .name {
-    font-size: 13px;
+    display: none;
   }
   .nav-row {
-    gap: 8px;
+    gap: 6px;
   }
   .nav-arrow {
-    padding: 8px 12px;
-    font-size: 12px;
+    padding: 6px 10px;
+    font-size: 11px;
   }
   .nav-title {
-    font-size: 14px;
+    font-size: 13px;
   }
   .country-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -888,5 +921,28 @@ header .stats .highlight {
   }
   .country-flag {
     font-size: 36px;
+  }
+  .filters {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .filters button {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .ownership-tabs button {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+  .filters .search {
+    font-size: 12px;
+    padding: 5px 12px;
+    flex: 1 1 100%;
+  }
+  .logout-btn,
+  .export-btn,
+  .header-btn {
+    font-size: 11px;
+    padding: 5px 10px;
   }
 }
