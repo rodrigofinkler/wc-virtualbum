@@ -188,7 +188,7 @@ function resolveRoute(slug, code) {
   return null
 }
 
-function CountryList({ shared }) {
+function CountryList({ shared, username }) {
   const [countries, setCountries] = useState([])
   const [loading, setLoading] = useState(true)
   const { authHeaders } = useAuth()
@@ -211,12 +211,14 @@ function CountryList({ shared }) {
       </div>
     )
 
+  const base = shared ? `/shared/${username}` : ''
+
   return (
     <div className="container">
       <header>
         <div className="title">
           <h1>
-            <Link to={shared ? '/shared' : '/'} className="home-link">
+            <Link to={base || '/'} className="home-link">
               FIFA World Cup 26
             </Link>
           </h1>
@@ -224,7 +226,7 @@ function CountryList({ shared }) {
         <div className="stats">
           <span>{countries.length} countries</span>
           {shared && (
-            <Link to="/shared" className="header-btn">
+            <Link to={base} className="header-btn">
               ← Album
             </Link>
           )}
@@ -233,11 +235,7 @@ function CountryList({ shared }) {
 
       <div className="country-grid">
         {countries.map((c) => (
-          <Link
-            key={c.id}
-            to={`${shared ? '/shared' : ''}/country/${c.code.toLowerCase()}`}
-            className="country-card"
-          >
+          <Link key={c.id} to={`${base}/country/${c.code.toLowerCase()}`} className="country-card">
             <span className="country-flag">{flagEmoji(c.code)}</span>
             <span className="country-code">{c.code}</span>
             <span className="country-name">{c.name}</span>
@@ -254,10 +252,10 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/shared" element={<SharedRoute />} />
-          <Route path="/shared/country" element={<SharedRoute />} />
-          <Route path="/shared/country/:code" element={<SharedRoute />} />
-          <Route path="/shared/:slug" element={<SharedRoute />} />
+          <Route path="/shared/:username" element={<SharedRoute />} />
+          <Route path="/shared/:username/country" element={<SharedRoute />} />
+          <Route path="/shared/:username/country/:code" element={<SharedRoute />} />
+          <Route path="/shared/:username/:slug" element={<SharedRoute />} />
           <Route path="/" element={<ProtectedPage />} />
           <Route path="/country" element={<ProtectedPage />} />
           <Route path="/country/:code" element={<ProtectedPage />} />
@@ -269,7 +267,8 @@ function App() {
 }
 
 function SharedRoute() {
-  return <AuthenticatedApp shared />
+  const { username } = useParams()
+  return <AuthenticatedApp shared username={username} />
 }
 
 function ProtectedPage() {
@@ -308,7 +307,7 @@ function BackToTop() {
   )
 }
 
-function AuthenticatedApp({ shared = false }) {
+function AuthenticatedApp({ shared = false, username }) {
   const params = useParams()
   const { pathname } = useLocation()
   const slug = params.slug
@@ -316,10 +315,11 @@ function AuthenticatedApp({ shared = false }) {
   const navigate = useNavigate()
   const { authHeaders, logout, user } = useAuth()
 
-  const basePath = shared ? '/shared' : ''
+  const basePath = shared ? `/shared/${username}` : ''
 
   const [stickers, setStickers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [claiming, setClaiming] = useState(new Set())
   const [userStickerIds, setUserStickerIds] = useState({})
   const [search, setSearch] = useState('')
@@ -332,10 +332,17 @@ function AuthenticatedApp({ shared = false }) {
 
   useEffect(() => {
     if (shared) {
-      fetch('/api/shared/')
-        .then((r) => r.json())
+      fetch(`/api/shared/${username}/`)
+        .then((r) => {
+          if (!r.ok) throw new Error('User not found')
+          return r.json()
+        })
         .then((data) => {
           setStickers(data)
+          setLoading(false)
+        })
+        .catch(() => {
+          setError('User not found')
           setLoading(false)
         })
     } else {
@@ -520,10 +527,18 @@ function AuthenticatedApp({ shared = false }) {
       </div>
     )
 
+  if (error)
+    return (
+      <div className="loading" style={{ flexDirection: 'column', gap: 8 }}>
+        <div style={{ fontSize: 32 }}>👤</div>
+        <div>User not found</div>
+      </div>
+    )
+
   if (!route) return null
 
   if (pathname === `${basePath}/country` || pathname === '/country')
-    return <CountryList shared={shared} />
+    return <CountryList shared={shared} username={username} />
 
   if (route.type === 'minimap') {
     const size = minimapSizes[minimapSize]

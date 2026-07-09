@@ -60,11 +60,14 @@ def status_view(request):
 
 @api_view(["GET"])
 @permission_classes([permissions.AllowAny])
-def shared_view(request):
+def shared_view(request, username):
     from django.contrib.auth import get_user_model
 
     User = get_user_model()
-    user = User.objects.get(username="rodrigo")
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
     stickers = Sticker.objects.select_related("country").all()
     serializer = StickerSerializer(
         stickers, many=True, context={"request": request, "shared_user": user}

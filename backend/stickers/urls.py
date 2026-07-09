@@ -23,5 +23,5 @@ urlpatterns = [
     path("auth/logout/", logout_view, name="logout"),
     path("auth/me/", me_view, name="me"),
     path("status/", status_view, name="status"),
-    path("shared/", shared_view, name="shared"),
+    path("shared/<str:username>/", shared_view, name="shared"),
 ]
