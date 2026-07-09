@@ -59,6 +59,20 @@ def status_view(request):
 
 
 @api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def shared_view(request):
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    user = User.objects.get(username="rodrigo")
+    stickers = Sticker.objects.select_related("country").all()
+    serializer = StickerSerializer(
+        stickers, many=True, context={"request": request, "shared_user": user}
+    )
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
 def me_view(request):
     if request.user.is_authenticated:
         return Response(

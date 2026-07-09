@@ -188,7 +188,7 @@ function resolveRoute(slug, code) {
   return null
 }
 
-function CountryList() {
+function CountryList({ shared }) {
   const [countries, setCountries] = useState([])
   const [loading, setLoading] = useState(true)
   const { authHeaders } = useAuth()
@@ -216,19 +216,28 @@ function CountryList() {
       <header>
         <div className="title">
           <h1>
-            <Link to="/" className="home-link">
+            <Link to={shared ? '/shared' : '/'} className="home-link">
               FIFA World Cup 26
             </Link>
           </h1>
         </div>
         <div className="stats">
           <span>{countries.length} countries</span>
+          {shared && (
+            <Link to="/shared" className="header-btn">
+              ← Album
+            </Link>
+          )}
         </div>
       </header>
 
       <div className="country-grid">
         {countries.map((c) => (
-          <Link key={c.id} to={`/country/${c.code.toLowerCase()}`} className="country-card">
+          <Link
+            key={c.id}
+            to={`${shared ? '/shared' : ''}/country/${c.code.toLowerCase()}`}
+            className="country-card"
+          >
             <span className="country-flag">{flagEmoji(c.code)}</span>
             <span className="country-code">{c.code}</span>
             <span className="country-name">{c.name}</span>
@@ -245,6 +254,10 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/shared" element={<SharedRoute />} />
+          <Route path="/shared/country" element={<SharedRoute />} />
+          <Route path="/shared/country/:code" element={<SharedRoute />} />
+          <Route path="/shared/:slug" element={<SharedRoute />} />
           <Route path="/" element={<ProtectedPage />} />
           <Route path="/country" element={<ProtectedPage />} />
           <Route path="/country/:code" element={<ProtectedPage />} />
@@ -253,6 +266,10 @@ function App() {
       </AuthProvider>
     </BrowserRouter>
   )
+}
+
+function SharedRoute() {
+  return <AuthenticatedApp shared />
 }
 
 function ProtectedPage() {
@@ -291,13 +308,15 @@ function BackToTop() {
   )
 }
 
-function AuthenticatedApp() {
+function AuthenticatedApp({ shared = false }) {
   const params = useParams()
   const { pathname } = useLocation()
   const slug = params.slug
   const code = params.code
   const navigate = useNavigate()
   const { authHeaders, logout, user } = useAuth()
+
+  const basePath = shared ? '/shared' : ''
 
   const [stickers, setStickers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -309,22 +328,31 @@ function AuthenticatedApp() {
   const [minimapSize, setMinimapSize] = useState('small')
   const minimapSizes = { small: 8, medium: 16, large: 24 }
 
-  const headers = authHeaders()
+  const headers = shared ? {} : authHeaders()
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/stickers/', { headers }).then((r) => r.json()),
-      fetch('/api/user-stickers/', { headers }).then((r) => r.json()),
-    ]).then(([s, us]) => {
-      setStickers(s)
-      const map = {}
-      us.forEach((us) => {
-        map[us.sticker.id] = us.id
+    if (shared) {
+      fetch('/api/shared/')
+        .then((r) => r.json())
+        .then((data) => {
+          setStickers(data)
+          setLoading(false)
+        })
+    } else {
+      Promise.all([
+        fetch('/api/stickers/', { headers }).then((r) => r.json()),
+        fetch('/api/user-stickers/', { headers }).then((r) => r.json()),
+      ]).then(([s, us]) => {
+        setStickers(s)
+        const map = {}
+        us.forEach((us) => {
+          map[us.sticker.id] = { id: us.id, addedAt: us.added_at }
+        })
+        setUserStickerIds(map)
+        setLoading(false)
       })
-      setUserStickerIds(map)
-      setLoading(false)
-    })
-  }, [])
+    }
+  }, [shared])
 
   const route = useMemo(() => resolveRoute(slug, code), [slug, code])
 
@@ -352,10 +380,11 @@ function AuthenticatedApp() {
   }, [stickers])
 
   function toggleSticker(sticker) {
-    if (claiming.has(sticker.id)) return
+    if (shared || claiming.has(sticker.id)) return
 
     const wasOwned = sticker.owned
-    const prevUserStickerId = userStickerIds[sticker.id]
+    const prevData = userStickerIds[sticker.id]
+    const prevUserStickerId = prevData?.id
 
     setClaiming((prev) => new Set(prev).add(sticker.id))
     setStickers((prev) => prev.map((s) => (s.id === sticker.id ? { ...s, owned: !wasOwned } : s)))
@@ -376,7 +405,10 @@ function AuthenticatedApp() {
         })
           .then((r) => r.json())
           .then((us) => {
-            setUserStickerIds((prev) => ({ ...prev, [sticker.id]: us.id }))
+            setUserStickerIds((prev) => ({
+              ...prev,
+              [sticker.id]: { id: us.id, addedAt: us.added_at },
+            }))
           })
 
     request
@@ -387,7 +419,7 @@ function AuthenticatedApp() {
         if (wasOwned) {
           setUserStickerIds((prev) => ({
             ...prev,
-            [sticker.id]: prevUserStickerId,
+            [sticker.id]: prevData,
           }))
         }
       })
@@ -477,7 +509,7 @@ function AuthenticatedApp() {
 
   function goTo(slug) {
     setSearch('')
-    navigate(`/${slug}`)
+    navigate(`${basePath}/${slug}`)
   }
 
   if (loading)
@@ -490,7 +522,8 @@ function AuthenticatedApp() {
 
   if (!route) return null
 
-  if (pathname === '/country') return <CountryList />
+  if (pathname === `${basePath}/country` || pathname === '/country')
+    return <CountryList shared={shared} />
 
   if (route.type === 'minimap') {
     const size = minimapSizes[minimapSize]
@@ -499,7 +532,7 @@ function AuthenticatedApp() {
         <header>
           <div className="title">
             <h1>
-              <Link to="/" className="home-link">
+              <Link to={basePath || '/'} className="home-link">
                 FIFA World Cup 26
               </Link>
             </h1>
@@ -507,7 +540,7 @@ function AuthenticatedApp() {
           <div className="stats">
             <span>{stickers.length} stickers</span>
             <span className="highlight">{stickers.filter((s) => s.owned).length} owned</span>
-            <Link to="/" className="header-btn">
+            <Link to={basePath || '/'} className="header-btn">
               ← Album
             </Link>
           </div>
@@ -533,7 +566,7 @@ function AuthenticatedApp() {
       <header>
         <div className="title">
           <h1>
-            <Link to="/" className="home-link">
+            <Link to={basePath || '/'} className="home-link">
               FIFA World Cup 26
             </Link>
           </h1>
@@ -541,19 +574,23 @@ function AuthenticatedApp() {
         <div className="stats">
           <span>{displayed.length} stickers</span>
           <span className="highlight">{displayed.filter((s) => s.owned).length} owned</span>
-          <button className="logout-btn" onClick={logout} title="Sign out">
-            Sign out
-          </button>
-          <button
-            className="export-btn"
-            onClick={() => setShowExport(true)}
-            title="Export missing stickers list"
-          >
-            Export Missing
-          </button>
-          <Link to="/minimap" className="header-btn">
-            Minimap
-          </Link>
+          {!shared && (
+            <>
+              <button className="logout-btn" onClick={logout} title="Sign out">
+                Sign out
+              </button>
+              <button
+                className="export-btn"
+                onClick={() => setShowExport(true)}
+                title="Export missing stickers list"
+              >
+                Export Missing
+              </button>
+              <Link to="/minimap" className="header-btn">
+                Minimap
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -583,8 +620,8 @@ function AuthenticatedApp() {
           </button>
         </div>
         <Link
-          to="/country"
-          className={`countries-btn${pathname.startsWith('/country') ? ' active' : ''}`}
+          to={`${basePath}/country`}
+          className={`countries-btn${pathname === `${basePath}/country` || pathname === '/country' ? ' active' : ''}`}
         >
           Countries
         </Link>
@@ -644,9 +681,14 @@ function AuthenticatedApp() {
           return (
             <div
               key={sticker.id}
-              className={`card${sticker.owned ? ' owned' : ''}${flagKey ? ' flagged' : ''}${claiming.has(sticker.id) ? ' claiming' : ''}`}
+              className={`card${sticker.owned ? ' owned' : ''}${flagKey ? ' flagged' : ''}${claiming.has(sticker.id) ? ' claiming' : ''}${shared ? ' readonly' : ''}`}
               style={flagKey ? flagStyle(flagKey) : {}}
               onClick={() => toggleSticker(sticker)}
+              title={
+                sticker.owned && userStickerIds[sticker.id]
+                  ? `Claimed on ${new Date(userStickerIds[sticker.id].addedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                  : undefined
+              }
             >
               <div className="sticker-image">
                 <div className="placeholder">{sticker.name}</div>

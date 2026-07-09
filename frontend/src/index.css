@@ -144,6 +144,16 @@ header .stats .highlight {
   position: relative;
 }
 
+.card.readonly {
+  cursor: default;
+}
+
+.card.readonly:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
 .card::after {
   content: '';
   position: absolute;
