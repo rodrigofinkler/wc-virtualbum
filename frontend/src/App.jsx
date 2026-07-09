@@ -419,7 +419,7 @@ function AuthenticatedApp() {
 
     const fwc = missing.filter((s) => s.name.startsWith('FWC'))
     if (fwc.length) {
-      lines.push(`FWC: ${fwc.map((s) => s.name).join(', ')}`)
+      lines.push(`⚽ FWC: ${fwc.map((s) => s.name.replace('FWC', '')).join(', ')}`)
     }
 
     const byCountry = {}
@@ -432,12 +432,12 @@ function AuthenticatedApp() {
       const country = byCountry[code]
       if (!country) return
       const emoji = flags[code] || ''
-      lines.push(`${emoji} ${code}: ${country.map((s) => s.name).join(', ')}`)
+      lines.push(`${emoji} ${code}: ${country.map((s) => s.name.replace(code, '')).join(', ')}`)
     })
 
     const cc = missing.filter((s) => s.name.startsWith('CC'))
     if (cc.length) {
-      lines.push(`CC: ${cc.map((s) => s.name).join(', ')}`)
+      lines.push(`🚩 CC: ${cc.map((s) => s.name.replace('CC', '')).join(', ')}`)
     }
 
     return lines.join('\n')
