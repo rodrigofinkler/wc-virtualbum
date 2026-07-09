@@ -18,6 +18,15 @@ class StickerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Sticker.objects.select_related("country").all()
     serializer_class = StickerSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        user = context["request"].user
+        if user.is_authenticated:
+            context["owned_ids"] = set(
+                UserSticker.objects.filter(user=user).values_list("sticker_id", flat=True)
+            )
+        return context
+
 
 class UserStickerViewSet(viewsets.ModelViewSet):
     queryset = UserSticker.objects.select_related("sticker__country", "user").all()
@@ -26,6 +35,14 @@ class UserStickerViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        user = context["request"].user
+        context["owned_ids"] = set(
+            UserSticker.objects.filter(user=user).values_list("sticker_id", flat=True)
+        )
+        return context
 
 
 @api_view(["POST"])
@@ -69,8 +86,9 @@ def shared_view(request, username):
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=404)
     stickers = Sticker.objects.select_related("country").all()
+    owned_ids = set(UserSticker.objects.filter(user=user).values_list("sticker_id", flat=True))
     serializer = StickerSerializer(
-        stickers, many=True, context={"request": request, "shared_user": user}
+        stickers, many=True, context={"request": request, "owned_ids": owned_ids}
     )
     return Response(serializer.data)
 

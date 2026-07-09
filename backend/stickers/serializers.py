@@ -19,6 +19,9 @@ class StickerSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "country", "country_id", "owned"]
 
     def get_owned(self, obj):
+        owned_ids = self.context.get("owned_ids")
+        if owned_ids is not None:
+            return obj.id in owned_ids
         user = self.context.get("shared_user") or self.context["request"].user
         if user.is_authenticated:
             return UserSticker.objects.filter(sticker=obj, user=user).exists()
