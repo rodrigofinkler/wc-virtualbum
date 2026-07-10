@@ -38,7 +38,7 @@ body::before {
 
 header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 32px;
   flex-wrap: wrap;
