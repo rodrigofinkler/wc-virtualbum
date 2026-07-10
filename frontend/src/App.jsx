@@ -568,7 +568,8 @@ function AuthenticatedApp({ shared = false, username }) {
               className={minimapSize === s ? 'active' : ''}
               onClick={() => setMinimapSize(s)}
             >
-              {s.charAt(0).toUpperCase() + s.slice(1)} ({minimapSizes[s]}px)
+              {s === 'xsmall' ? 'X-Small' : s.charAt(0).toUpperCase() + s.slice(1)} (
+              {minimapSizes[s]}px)
             </button>
           ))}
         </div>
