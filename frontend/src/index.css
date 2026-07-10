@@ -55,11 +55,38 @@ header .title h1 {
   background-clip: text;
 }
 
+header .title .counts {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+header .title .counts span {
+  font-size: 12px;
+  color: #a1a1aa;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+header .title .counts .highlight {
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+header .actions {
+  display: flex;
+  gap: 12px;
+}
+
 header .stats {
   display: flex;
   gap: 12px;
 }
 
+header .actions span,
 header .stats span {
   font-size: 13px;
   color: #a1a1aa;
@@ -69,6 +96,7 @@ header .stats span {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+header .actions .highlight,
 header .stats .highlight {
   color: #22c55e;
   border-color: rgba(34, 197, 94, 0.2);
@@ -77,12 +105,18 @@ header .stats .highlight {
 
 .filters {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-bottom: 28px;
+}
+
+.filters-row {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.filters .search {
+.filters-row .search {
   flex: 1 1 200px;
   padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -95,16 +129,16 @@ header .stats .highlight {
   min-width: 0;
 }
 
-.filters .search::placeholder {
+.filters-row .search::placeholder {
   color: #52525b;
 }
 
-.filters .search:focus {
+.filters-row .search:focus {
   border-color: rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.06);
 }
 
-.filters button {
+.filters-row button {
   padding: 7px 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 100px;
@@ -116,15 +150,41 @@ header .stats .highlight {
   transition: all 0.25s ease;
 }
 
-.filters button:hover {
+.filters-row button:hover {
   border-color: rgba(255, 255, 255, 0.15);
   color: #e4e4e7;
   background: rgba(255, 255, 255, 0.06);
 }
 
-.filters button.active {
+.filters-row button.active {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.filter-toggle {
+  display: flex;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 100px;
+  padding: 3px;
+  align-self: flex-start;
+}
+
+.filter-toggle button {
+  padding: 5px 16px;
+  border: none;
+  border-radius: 100px;
+  background: transparent;
+  color: #71717a;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.filter-toggle button.active {
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
@@ -478,18 +538,19 @@ header .stats .highlight {
 }
 
 .countries-btn {
-  padding: 7px 18px;
+  padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 100px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.03);
   color: #a1a1aa;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   transition: all 0.25s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  letter-spacing: 0.04em;
 }
 
 .countries-btn:hover {
@@ -673,6 +734,8 @@ header .stats .highlight {
 }
 
 .logout-btn {
+  display: inline-flex;
+  align-items: center;
   padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 100px;
@@ -691,6 +754,8 @@ header .stats .highlight {
 }
 
 .export-btn {
+  display: inline-flex;
+  align-items: center;
   padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 100px;
@@ -804,6 +869,8 @@ header .stats .highlight {
 }
 
 .header-btn {
+  display: inline-flex;
+  align-items: center;
   padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 100px;
@@ -814,8 +881,6 @@ header .stats .highlight {
   font-weight: 500;
   text-decoration: none;
   transition: all 0.25s ease;
-  display: inline-flex;
-  align-items: center;
 }
 
 .header-btn:hover {
@@ -936,7 +1001,7 @@ header .stats .highlight {
     gap: 6px;
     margin-bottom: 16px;
   }
-  .filters button {
+  .filters-row button {
     font-size: 11px;
     padding: 5px 12px;
   }
@@ -944,7 +1009,7 @@ header .stats .highlight {
     font-size: 11px;
     padding: 3px 10px;
   }
-  .filters .search {
+  .filters-row .search {
     font-size: 12px;
     padding: 5px 12px;
     flex: 1 1 100%;

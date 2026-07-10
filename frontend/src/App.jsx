@@ -326,6 +326,7 @@ function AuthenticatedApp({ shared = false, username }) {
   const [ownership, setOwnership] = useState('all')
   const [showExport, setShowExport] = useState(false)
   const [minimapSize, setMinimapSize] = useState('small')
+  const [filterMode, setFilterMode] = useState('groups')
   const minimapSizes = { small: 8, medium: 16, large: 24 }
 
   const headers = shared ? {} : authHeaders()
@@ -585,73 +586,186 @@ function AuthenticatedApp({ shared = false, username }) {
               FIFA World Cup 26
             </Link>
           </h1>
+          <div className="counts">
+            <span>{baseDisplayed.length} stickers</span>
+            <span className="highlight">{baseDisplayed.filter((s) => s.owned).length} owned</span>
+          </div>
         </div>
-        <div className="stats">
-          <span>{displayed.length} stickers</span>
-          <span className="highlight">{displayed.filter((s) => s.owned).length} owned</span>
+        <div className="actions">
           {!shared && (
             <>
-              <button className="logout-btn" onClick={logout} title="Sign out">
-                Sign out
-              </button>
               <Link to="/minimap" className="header-btn">
                 Minimap
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ marginLeft: 6 }}
+                >
+                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+                  <line x1="8" y1="2" x2="8" y2="18" />
+                  <line x1="16" y1="6" x2="16" y2="22" />
+                </svg>
               </Link>
             </>
           )}
+          <Link to={`${basePath}/country`} className="header-btn">
+            All Countries
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ marginLeft: 6 }}
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+          </Link>
           <button
             className="export-btn"
             onClick={() => setShowExport(true)}
             title="Export missing stickers list"
           >
             Export Missing
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ marginLeft: 6 }}
+            >
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
           </button>
+          {!shared && (
+            <button className="logout-btn" onClick={logout} title="Sign out">
+              Sign out
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ marginLeft: 6 }}
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
+          )}
         </div>
       </header>
 
       <div className="filters">
-        <input
-          type="text"
-          className="search"
-          placeholder="Search stickers…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button onClick={() => goTo('')} className={!slug ? 'active' : ''}>
-          All
-        </button>
-        <div className="ownership-tabs">
+        <div className="filters-row">
+          <input
+            type="text"
+            className="search"
+            placeholder="Search stickers…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button onClick={() => goTo('')} className={!slug ? 'active' : ''}>
+            All
+          </button>
+          <div className="ownership-tabs">
+            <button
+              className={ownership === 'owned' ? 'active' : ''}
+              onClick={() => setOwnership(ownership === 'owned' ? 'all' : 'owned')}
+            >
+              ✓ Owned
+            </button>
+            <button
+              className={ownership === 'missing' ? 'active' : ''}
+              onClick={() => setOwnership(ownership === 'missing' ? 'all' : 'missing')}
+            >
+              ○ Missing
+            </button>
+          </div>
+        </div>
+        <div className="filter-toggle">
           <button
-            className={ownership === 'owned' ? 'active' : ''}
-            onClick={() => setOwnership(ownership === 'owned' ? 'all' : 'owned')}
+            className={filterMode === 'groups' ? 'active' : ''}
+            onClick={() => setFilterMode('groups')}
           >
-            ✓ Owned
+            🔠 Groups
           </button>
           <button
-            className={ownership === 'missing' ? 'active' : ''}
-            onClick={() => setOwnership(ownership === 'missing' ? 'all' : 'missing')}
+            className={filterMode === 'countries' ? 'active' : ''}
+            onClick={() => setFilterMode('countries')}
           >
-            ○ Missing
+            🌎 Countries
           </button>
         </div>
-        <Link
-          to={`${basePath}/country`}
-          className={`countries-btn${pathname === `${basePath}/country` || pathname === '/country' ? ' active' : ''}`}
-        >
-          Countries
-        </Link>
-        {sectionOrder
-          .filter((s) => groups[s])
-          .map((s) => (
+        <div className="filters-row">
+          {sectionOrder
+            .filter((s) => groups[s] && (s === 'Panini' || s === 'FWC'))
+            .map((s) => (
+              <button
+                key={s}
+                onClick={() => goTo(groupToSlug[s])}
+                className={route.type === 'group' && route.group === s ? 'active' : ''}
+              >
+                {groupFlags[s] ? `${groupFlags[s]} ` : ''}
+                {s === 'Panini' ? '⚽ ' : s === 'FWC' ? '🏆 ' : ''}
+                {s} <small>({groups[s].length})</small>
+              </button>
+            ))}
+          {filterMode === 'groups'
+            ? sectionOrder
+                .filter((s) => groups[s] && s !== 'Panini' && s !== 'FWC' && s !== 'Coca-Cola')
+                .map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => goTo(groupToSlug[s])}
+                    className={route.type === 'group' && route.group === s ? 'active' : ''}
+                  >
+                    {groupFlags[s] ? `${groupFlags[s]} ` : ''}
+                    {s} <small>({groups[s].length})</small>
+                  </button>
+                ))
+            : countryOrder.map((code) => (
+                <button
+                  key={code}
+                  onClick={() => goTo(`country/${code.toLowerCase()}`)}
+                  className={route.type === 'country' && route.code === code ? 'active' : ''}
+                >
+                  {flagEmoji(code)} {code}
+                </button>
+              ))}
+          {groups['Coca-Cola'] && (
             <button
-              key={s}
-              onClick={() => goTo(groupToSlug[s])}
-              className={route.type === 'group' && route.group === s ? 'active' : ''}
+              key="Coca-Cola"
+              onClick={() => goTo('cc')}
+              className={route.type === 'group' && route.group === 'Coca-Cola' ? 'active' : ''}
             >
-              {groupFlags[s] ? `${groupFlags[s]} ` : ''}
-              {s} <small>({groups[s].length})</small>
+              🚩 Coca-Cola <small>({groups['Coca-Cola'].length})</small>
             </button>
-          ))}
+          )}
+        </div>
       </div>
 
       {(slug || code) && !search && route && (
