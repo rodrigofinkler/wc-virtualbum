@@ -594,18 +594,18 @@ function AuthenticatedApp({ shared = false, username }) {
               <button className="logout-btn" onClick={logout} title="Sign out">
                 Sign out
               </button>
-              <button
-                className="export-btn"
-                onClick={() => setShowExport(true)}
-                title="Export missing stickers list"
-              >
-                Export Missing
-              </button>
               <Link to="/minimap" className="header-btn">
                 Minimap
               </Link>
             </>
           )}
+          <button
+            className="export-btn"
+            onClick={() => setShowExport(true)}
+            title="Export missing stickers list"
+          >
+            Export Missing
+          </button>
         </div>
       </header>
 
