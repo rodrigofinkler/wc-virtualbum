@@ -327,7 +327,7 @@ function AuthenticatedApp({ shared = false, username }) {
   const [showExport, setShowExport] = useState(false)
   const [minimapSize, setMinimapSize] = useState('small')
   const [filterMode, setFilterMode] = useState('groups')
-  const minimapSizes = { small: 8, medium: 16, large: 24 }
+  const minimapSizes = { xsmall: 4, small: 8, medium: 16, large: 24 }
 
   const headers = shared ? {} : authHeaders()
 
@@ -562,7 +562,7 @@ function AuthenticatedApp({ shared = false, username }) {
           </div>
         </header>
         <div className="minimap-sizes">
-          {['small', 'medium', 'large'].map((s) => (
+          {['xsmall', 'small', 'medium', 'large'].map((s) => (
             <button
               key={s}
               className={minimapSize === s ? 'active' : ''}
