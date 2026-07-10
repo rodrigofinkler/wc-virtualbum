@@ -378,6 +378,7 @@ function AuthenticatedApp({ shared = false, username }) {
   const [showExport, setShowExport] = useState(false)
   const [minimapSize, setMinimapSize] = useState('small')
   const [filterMode, setFilterMode] = useState('groups')
+  const [colsPerRow, setColsPerRow] = useState(6)
   const minimapSizes = { xsmall: 4, small: 8, medium: 16, large: 24 }
 
   const headers = shared ? {} : authHeaders()
@@ -646,6 +647,17 @@ function AuthenticatedApp({ shared = false, username }) {
               owned={baseDisplayed.filter((s) => s.owned).length}
             />
           </div>
+          <div className="cols-selector">
+            {[4, 6, 8].map((n) => (
+              <button
+                key={n}
+                className={colsPerRow === n ? 'active' : ''}
+                onClick={() => setColsPerRow(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="actions">
           <Link to={`${basePath}/minimap`} className="header-btn">
@@ -849,7 +861,7 @@ function AuthenticatedApp({ shared = false, username }) {
         </div>
       )}
 
-      <div className="grid">
+      <div className="grid" style={{ gridTemplateColumns: `repeat(${colsPerRow}, 1fr)` }}>
         {displayed.map((sticker) => {
           const flagKey =
             sticker.owned &&
