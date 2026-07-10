@@ -104,6 +104,18 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("User rodrigo created"))
         self.stdout.write(self.style.SUCCESS(f"Auth token: {token.key}"))
 
+        arthur, _ = User.objects.get_or_create(
+            username="arthur",
+            defaults={
+                "email": "arthur@example.com",
+                "password": make_password("dorohedoro"),
+                "is_active": True,
+            },
+        )
+        arthur_token, _ = Token.objects.get_or_create(user=arthur)
+        self.stdout.write(self.style.SUCCESS("User arthur created"))
+        self.stdout.write(self.style.SUCCESS(f"Auth token: {arthur_token.key}"))
+
         total = Sticker.objects.count()
         self.stdout.write(
             self.style.SUCCESS(f"Done — {Country.objects.count()} countries, {total} stickers")
