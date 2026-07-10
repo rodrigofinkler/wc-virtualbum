@@ -309,9 +309,24 @@ function BackToTop() {
 
 function ProgressRing({ total, owned }) {
   const pct = total > 0 ? Math.round((owned / total) * 100) : 0
+  const [animPct, setAnimPct] = useState(0)
   const r = 17
   const c = 2 * Math.PI * r
-  const offset = c - (pct / 100) * c
+  const offset = c - (animPct / 100) * c
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setAnimPct(pct))
+    return () => cancelAnimationFrame(id)
+  }, [pct])
+
+  function color(p) {
+    if (p <= 50) {
+      const t = p / 50
+      return `hsl(${Math.round(0 + t * 60)}, 80%, 50%)`
+    }
+    const t = (p - 50) / 50
+    return `hsl(${Math.round(60 + t * 60)}, 80%, 45%)`
+  }
 
   return (
     <div className="progress-ring">
@@ -329,15 +344,16 @@ function ProgressRing({ total, owned }) {
           cy="22"
           r={r}
           fill="none"
-          stroke="#22c55e"
+          stroke={color(animPct)}
           strokeWidth="3.5"
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={offset}
           transform="rotate(-90 22 22)"
+          style={{ transition: 'stroke-dashoffset 1s ease, stroke 0.6s ease' }}
         />
       </svg>
-      <div className="progress-label">{pct}%</div>
+      <div className="progress-label">{animPct}%</div>
     </div>
   )
 }
