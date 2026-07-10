@@ -309,28 +309,35 @@ function BackToTop() {
 
 function ProgressRing({ total, owned }) {
   const pct = total > 0 ? Math.round((owned / total) * 100) : 0
-  const r = 14
+  const r = 17
   const c = 2 * Math.PI * r
   const offset = c - (pct / 100) * c
 
   return (
     <div className="progress-ring">
-      <svg width="36" height="36" viewBox="0 0 36 36">
-        <circle cx="18" cy="18" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="3" />
+      <svg width="44" height="44" viewBox="0 0 44 44">
         <circle
-          cx="18"
-          cy="18"
+          cx="22"
+          cy="22"
+          r={r}
+          fill="none"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="3.5"
+        />
+        <circle
+          cx="22"
+          cy="22"
           r={r}
           fill="none"
           stroke="#22c55e"
-          strokeWidth="3"
+          strokeWidth="3.5"
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={offset}
-          transform="rotate(-90 18 18)"
+          transform="rotate(-90 22 22)"
         />
       </svg>
-      <span className="progress-label">{pct}%</span>
+      <div className="progress-label">{pct}%</div>
     </div>
   )
 }
@@ -618,11 +625,11 @@ function AuthenticatedApp({ shared = false, username }) {
           <div className="counts">
             <span>{baseDisplayed.length} stickers</span>
             <span className="highlight">{baseDisplayed.filter((s) => s.owned).length} owned</span>
+            <ProgressRing
+              total={baseDisplayed.length}
+              owned={baseDisplayed.filter((s) => s.owned).length}
+            />
           </div>
-          <ProgressRing
-            total={baseDisplayed.length}
-            owned={baseDisplayed.filter((s) => s.owned).length}
-          />
         </div>
         <div className="actions">
           <Link to={`${basePath}/minimap`} className="header-btn">
