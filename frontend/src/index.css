@@ -191,7 +191,9 @@ header .actions {
 
 .menu-dropdown a,
 .menu-dropdown button {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
   padding: 8px 14px;
   border: none;
@@ -210,6 +212,15 @@ header .actions {
 .menu-dropdown button:hover {
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
+}
+
+.menu-dropdown .sign-out:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.menu-dropdown svg {
+  flex-shrink: 0;
 }
 
 .menu-btn {
@@ -343,6 +354,22 @@ header .stats .highlight {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
+}
+
+.grid.grid-cols-8 {
+  gap: 12px;
+}
+
+.grid.grid-cols-8 .info {
+  padding: 10px;
+}
+
+.grid.grid-cols-8 .info .name {
+  font-size: 12px;
+}
+
+.grid.grid-cols-8 .sticker-image .placeholder {
+  font-size: 28px;
 }
 
 .card {
@@ -482,22 +509,14 @@ header .stats .highlight {
 }
 
 .info {
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.info .number {
-  font-size: 11px;
-  color: #52525b;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
 .info .name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #e4e4e7;
   line-height: 1.3;

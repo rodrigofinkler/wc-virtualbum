@@ -419,14 +419,42 @@ function UserMenu({ logout }) {
           <div className="menu-overlay" onClick={() => setOpen(false)} />
           <div className="menu-dropdown">
             <Link to="/" onClick={() => setOpen(false)}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
               My Stickers
             </Link>
             <button
+              className="sign-out"
               onClick={() => {
                 setOpen(false)
                 logout()
               }}
             >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
               Sign out
             </button>
           </div>
@@ -798,7 +826,7 @@ function AuthenticatedApp({ shared = false, username }) {
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
           </button>
-          {!shared ? (
+          {user ? (
             <UserMenu logout={logout} />
           ) : (
             <Link to="/" className="header-btn">
@@ -883,6 +911,7 @@ function AuthenticatedApp({ shared = false, username }) {
                 .filter((s) => groups[s] && s !== 'Panini' && s !== 'FWC' && s !== 'Coca-Cola')
                 .map((s) => (
                   <button
+                    className="sign-out"
                     key={s}
                     onClick={() => goTo(groupToSlug[s])}
                     className={route.type === 'group' && route.group === s ? 'active' : ''}
@@ -941,7 +970,10 @@ function AuthenticatedApp({ shared = false, username }) {
         </div>
       )}
 
-      <div className="grid" style={{ gridTemplateColumns: `repeat(${colsPerRow}, 1fr)` }}>
+      <div
+        className={`grid${colsPerRow === 8 ? ' grid-cols-8' : ''}`}
+        style={{ gridTemplateColumns: `repeat(${colsPerRow}, 1fr)` }}
+      >
         {displayed.map((sticker) => {
           const flagKey =
             sticker.owned &&
@@ -967,7 +999,6 @@ function AuthenticatedApp({ shared = false, username }) {
                 <div className="placeholder">{sticker.name}</div>
               </div>
               <div className="info">
-                <span className="number">{sticker.name}</span>
                 {sticker.country && (
                   <span className="name">
                     {flagEmoji(sticker.country.code)} {sticker.country.name}
