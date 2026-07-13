@@ -116,7 +116,7 @@ def users_view(request):
     total_stickers = Sticker.objects.count()
     users = (
         User.objects.filter(is_active=True)
-        .annotate(owned_count=Count("usersticker"))
+        .annotate(owned_count=Count("stickers"))
         .order_by("username")
     )
     data = [
