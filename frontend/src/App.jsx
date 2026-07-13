@@ -184,7 +184,6 @@ function resolveRoute(slug, code) {
   }
   if (!slug) return { type: 'all' }
   if (slug === 'minimap') return { type: 'minimap' }
-  if (slug === 'users') return { type: 'users' }
   if (slugToGroup[slug]) return { type: 'group', group: slugToGroup[slug] }
   return null
 }
@@ -792,9 +791,7 @@ function AuthenticatedApp({ shared = false, username }) {
   if (pathname === `${basePath}/country` || pathname === '/country')
     return <CountryList shared={shared} username={username} />
 
-  if (route.type === 'users') {
-    return <UserList />
-  }
+  if (pathname === `${basePath}/users` || pathname === '/users') return <UserList />
 
   if (route.type === 'minimap') {
     const size = minimapSizes[minimapSize]
