@@ -391,6 +391,51 @@ function ProgressRing({ total, owned }) {
   )
 }
 
+function UserMenu({ logout }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="menu-wrapper">
+      <button className="menu-btn" onClick={() => setOpen(!open)} title="Menu">
+        Menu
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ marginLeft: 6 }}
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      {open && (
+        <>
+          <div className="menu-overlay" onClick={() => setOpen(false)} />
+          <div className="menu-dropdown">
+            <Link to="/" onClick={() => setOpen(false)}>
+              My Stickers
+            </Link>
+            <button
+              onClick={() => {
+                setOpen(false)
+                logout()
+              }}
+            >
+              Sign out
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 function AuthenticatedApp({ shared = false, username }) {
   const params = useParams()
   const { pathname } = useLocation()
@@ -753,9 +798,11 @@ function AuthenticatedApp({ shared = false, username }) {
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
           </button>
-          {!shared && (
-            <button className="logout-btn" onClick={logout} title="Sign out">
-              Sign out
+          {!shared ? (
+            <UserMenu logout={logout} />
+          ) : (
+            <Link to="/" className="header-btn">
+              Login
               <svg
                 width="14"
                 height="14"
@@ -767,11 +814,11 @@ function AuthenticatedApp({ shared = false, username }) {
                 strokeLinejoin="round"
                 style={{ marginLeft: 6 }}
               >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                <polyline points="10 17 15 12 10 7" />
+                <line x1="15" y1="12" x2="3" y2="12" />
               </svg>
-            </button>
+            </Link>
           )}
         </div>
       </header>
