@@ -134,6 +134,29 @@ header .title .counts .highlight {
   border-radius: 0;
 }
 
+.sparkle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color);
+  animation: sparkle-burst 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) var(--delay) both;
+  pointer-events: none;
+}
+
+@keyframes sparkle-burst {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-35px) scale(0);
+    opacity: 0;
+  }
+}
+
 header .actions {
   display: flex;
   gap: 12px;

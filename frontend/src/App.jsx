@@ -310,6 +310,8 @@ function BackToTop() {
 function ProgressRing({ total, owned }) {
   const pct = total > 0 ? Math.round((owned / total) * 100) : 0
   const [animPct, setAnimPct] = useState(0)
+  const [celebrate, setCelebrate] = useState(false)
+  const prevPct = useRef(0)
   const r = 17
   const c = 2 * Math.PI * r
   const offset = c - (animPct / 100) * c
@@ -318,6 +320,26 @@ function ProgressRing({ total, owned }) {
     const id = requestAnimationFrame(() => setAnimPct(pct))
     return () => cancelAnimationFrame(id)
   }, [pct])
+
+  useEffect(() => {
+    if (animPct === 100 && prevPct.current < 100) {
+      setTimeout(() => setCelebrate(true), 1000)
+      setTimeout(() => setCelebrate(false), 2500)
+    }
+    prevPct.current = animPct
+  }, [animPct])
+
+  function genSparkles() {
+    if (!celebrate) return []
+    return Array.from({ length: 16 }, (_, i) => ({
+      id: i,
+      angle: (i / 16) * 360,
+      delay: ((i * 7) % 10) / 50,
+      color: `hsl(${(i * 37 + 15) % 75}, 90%, 55%)`,
+    }))
+  }
+
+  const sparkles = genSparkles()
 
   function color(p) {
     if (p <= 50) {
@@ -354,6 +376,17 @@ function ProgressRing({ total, owned }) {
         />
       </svg>
       <div className="progress-label">{animPct}%</div>
+      {sparkles.map((s) => (
+        <div
+          key={s.id}
+          className="sparkle"
+          style={{
+            '--angle': `${s.angle}deg`,
+            '--delay': `${s.delay}s`,
+            '--color': s.color,
+          }}
+        />
+      ))}
     </div>
   )
 }
