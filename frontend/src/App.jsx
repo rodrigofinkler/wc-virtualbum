@@ -635,7 +635,7 @@ function AuthenticatedApp({ shared = false, username }) {
 
     const cc = missing.filter((s) => s.name.startsWith('CC'))
     if (cc.length) {
-      lines.push(`🚩 CC: ${cc.map((s) => s.name.replace('CC', '')).join(', ')}`)
+      lines.push(`🥤 CC: ${cc.map((s) => s.name.replace('CC', '')).join(', ')}`)
     }
 
     return lines.join('\n')
@@ -935,7 +935,7 @@ function AuthenticatedApp({ shared = false, username }) {
               onClick={() => goTo('cc')}
               className={route.type === 'group' && route.group === 'Coca-Cola' ? 'active' : ''}
             >
-              🚩 Coca-Cola <small>({groups['Coca-Cola'].length})</small>
+              🥤 Coca-Cola <small>({groups['Coca-Cola'].length})</small>
             </button>
           )}
         </div>
