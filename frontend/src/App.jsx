@@ -184,6 +184,7 @@ function resolveRoute(slug, code) {
   }
   if (!slug) return { type: 'all' }
   if (slug === 'minimap') return { type: 'minimap' }
+  if (slug === 'users') return { type: 'users' }
   if (slugToGroup[slug]) return { type: 'group', group: slugToGroup[slug] }
   return null
 }
@@ -247,6 +248,79 @@ function CountryList({ shared, username }) {
   )
 }
 
+function UserList() {
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const { authHeaders } = useAuth()
+  const headers = authHeaders()
+
+  useEffect(() => {
+    fetch('/api/users/', { headers })
+      .then((r) => r.json())
+      .then((data) => {
+        setUsers(data)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading)
+    return (
+      <div className="loading">
+        <div className="spinner" />
+        Loading users...
+      </div>
+    )
+
+  return (
+    <div className="container">
+      <header>
+        <div className="title">
+          <h1>All Collectors</h1>
+        </div>
+      </header>
+      <div className="user-list">
+        {users.map((u) => (
+          <Link key={u.id} to={`/shared/${u.username}`} className="user-card">
+            <div className="user-avatar">{u.username.charAt(0).toUpperCase()}</div>
+            <div className="user-info">
+              <span className="user-name">{u.username}</span>
+              <span className="user-stats">
+                {u.owned} / {u.total} stickers
+              </span>
+            </div>
+            <div className="user-progress">
+              <svg width="36" height="36" viewBox="0 0 36 36">
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.08)"
+                  strokeWidth="3"
+                />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  stroke={u.pct >= 67 ? '#22c55e' : u.pct >= 34 ? '#eab308' : '#ef4444'}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 14}
+                  strokeDashoffset={2 * Math.PI * 14 - (u.pct / 100) * 2 * Math.PI * 14}
+                  transform="rotate(-90 18 18)"
+                  style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+                />
+              </svg>
+              <span className="user-pct">{u.pct}%</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -259,6 +333,7 @@ function App() {
           <Route path="/" element={<ProtectedPage />} />
           <Route path="/country" element={<ProtectedPage />} />
           <Route path="/country/:code" element={<ProtectedPage />} />
+          <Route path="/users" element={<ProtectedPage />} />
           <Route path="/:slug" element={<ProtectedPage />} />
         </Routes>
       </AuthProvider>
@@ -433,6 +508,24 @@ function UserMenu({ logout }) {
                 <line x1="7" y1="7" x2="7.01" y2="7" />
               </svg>
               My Stickers
+            </Link>
+            <Link to="/users" onClick={() => setOpen(false)}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              View Others
             </Link>
             <button
               className="sign-out"
@@ -698,6 +791,10 @@ function AuthenticatedApp({ shared = false, username }) {
 
   if (pathname === `${basePath}/country` || pathname === '/country')
     return <CountryList shared={shared} username={username} />
+
+  if (route.type === 'users') {
+    return <UserList />
+  }
 
   if (route.type === 'minimap') {
     const size = minimapSizes[minimapSize]

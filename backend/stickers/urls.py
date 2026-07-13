@@ -10,6 +10,7 @@ from .views import (
     me_view,
     shared_view,
     status_view,
+    users_view,
 )
 
 router = DefaultRouter()
@@ -24,4 +25,5 @@ urlpatterns = [
     path("auth/me/", me_view, name="me"),
     path("status/", status_view, name="status"),
     path("shared/<str:username>/", shared_view, name="shared"),
+    path("users/", users_view, name="users"),
 ]

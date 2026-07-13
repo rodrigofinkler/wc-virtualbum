@@ -104,3 +104,29 @@ def me_view(request):
             }
         )
     return Response({"error": "Not authenticated"}, status=401)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def users_view(request):
+    from django.contrib.auth import get_user_model
+    from django.db.models import Count
+
+    User = get_user_model()
+    total_stickers = Sticker.objects.count()
+    users = (
+        User.objects.filter(is_active=True)
+        .annotate(owned_count=Count("usersticker"))
+        .order_by("username")
+    )
+    data = [
+        {
+            "id": u.id,
+            "username": u.username,
+            "owned": u.owned_count,
+            "total": total_stickers,
+            "pct": round((u.owned_count / total_stickers) * 100) if total_stickers else 0,
+        }
+        for u in users
+    ]
+    return Response(data)
