@@ -173,6 +173,15 @@ def progress_view(request):
     }
     group_to_slug = {v: k for k, v in slug_to_group.items()}
 
+    group_countries = {}
+    for s in stickers:
+        if s.country:
+            g = f"Group {s.country.group}"
+            if g not in group_countries:
+                group_countries[g] = []
+            if s.country.code not in group_countries[g]:
+                group_countries[g].append(s.country.code)
+
     groups = OrderedDict()
     for s in stickers:
         if s.name == "00":
@@ -186,7 +195,13 @@ def progress_view(request):
         else:
             continue
         if key not in groups:
-            groups[key] = {"label": key, "slug": group_to_slug.get(key), "total": 0, "owned": 0}
+            groups[key] = {
+                "label": key,
+                "slug": group_to_slug.get(key),
+                "total": 0,
+                "owned": 0,
+                "country_codes": group_countries.get(key, []),
+            }
         groups[key]["total"] += 1
         if s.id in owned_ids:
             groups[key]["owned"] += 1

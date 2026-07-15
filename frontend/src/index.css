@@ -933,6 +933,14 @@ header .stats .highlight {
   flex-shrink: 0;
 }
 
+.group-emojis {
+  font-size: 14px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .progress-info {
   display: flex;
   flex-direction: column;
@@ -990,6 +998,10 @@ header .stats .highlight {
   }
   .progress-emoji {
     font-size: 20px;
+  }
+  .group-emojis {
+    font-size: 12px;
+    max-width: 80px;
   }
   .progress-label {
     font-size: 13px;

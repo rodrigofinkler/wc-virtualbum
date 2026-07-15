@@ -379,18 +379,36 @@ function ProgressPage({ shared, username }) {
 
       <div className="progress-list">
         {items.map((item) => {
-          const emoji =
-            item.code === 'PANINI'
+          const isCountryTab = tab === 'country'
+          const emoji = isCountryTab
+            ? item.code === 'PANINI'
               ? '⚽'
               : item.code === 'FWC'
                 ? '🏆'
                 : item.code === 'CC'
                   ? '🥤'
                   : flags[item.code] || ''
+            : ''
           return (
             <div key={item.code || item.slug} className="progress-item">
               <div className="progress-left">
-                <span className="progress-emoji">{emoji}</span>
+                {isCountryTab ? (
+                  <span className="progress-emoji">{emoji}</span>
+                ) : item.country_codes?.length ? (
+                  <span className="progress-emoji group-emojis">
+                    {item.country_codes.map((c) => flags[c]).join(' ')}
+                  </span>
+                ) : (
+                  <span className="progress-emoji">
+                    {item.label === 'Panini'
+                      ? '⚽'
+                      : item.label === 'FWC'
+                        ? '🏆'
+                        : item.label === 'Coca-Cola'
+                          ? '🥤'
+                          : ''}
+                  </span>
+                )}
                 <div className="progress-info">
                   <span className="progress-label">{item.label}</span>
                   <span className="progress-detail">
