@@ -320,6 +320,98 @@ function UserList() {
   )
 }
 
+function ProgressPage({ shared, username }) {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState('group')
+  const { authHeaders } = useAuth()
+  const headers = shared ? {} : authHeaders()
+
+  useEffect(() => {
+    const params = shared && username ? `?username=${username}` : ''
+    fetch(`/api/progress/${params}`, { headers })
+      .then((r) => r.json())
+      .then((d) => {
+        setData(d)
+        setLoading(false)
+      })
+  }, [shared, username])
+
+  if (loading)
+    return (
+      <div className="loading">
+        <div className="spinner" />
+        Loading progress...
+      </div>
+    )
+
+  if (!data) return null
+
+  const base = shared ? `/shared/${username}` : ''
+  const items = tab === 'group' ? data.by_group : data.by_country
+
+  return (
+    <div className="container">
+      <header>
+        <div className="title">
+          <h1>
+            <Link to={base || '/'} className="home-link">
+              FIFA World Cup 26
+            </Link>
+          </h1>
+        </div>
+        <div className="stats">
+          <span>Progress</span>
+          <Link to={base || '/'} className="header-btn">
+            ← Album
+          </Link>
+        </div>
+      </header>
+
+      <div className="progress-tabs">
+        <button className={tab === 'group' ? 'active' : ''} onClick={() => setTab('group')}>
+          🔠 By Group
+        </button>
+        <button className={tab === 'country' ? 'active' : ''} onClick={() => setTab('country')}>
+          🌎 By Country
+        </button>
+      </div>
+
+      <div className="progress-list">
+        {items.map((item) => {
+          const emoji =
+            item.code === 'PANINI'
+              ? '⚽'
+              : item.code === 'FWC'
+                ? '🏆'
+                : item.code === 'CC'
+                  ? '🥤'
+                  : flags[item.code] || ''
+          return (
+            <div key={item.code || item.slug} className="progress-item">
+              <div className="progress-left">
+                <span className="progress-emoji">{emoji}</span>
+                <div className="progress-info">
+                  <span className="progress-label">{item.label}</span>
+                  <span className="progress-detail">
+                    {item.owned} / {item.total}
+                  </span>
+                </div>
+              </div>
+              <div className="progress-right">
+                <div className="progress-bar-bg">
+                  <div className="progress-bar-fill" style={{ width: `${item.pct}%` }} />
+                </div>
+                <span className="progress-pct">{item.pct}%</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -328,11 +420,13 @@ function App() {
           <Route path="/shared/:username" element={<SharedRoute />} />
           <Route path="/shared/:username/country" element={<SharedRoute />} />
           <Route path="/shared/:username/country/:code" element={<SharedRoute />} />
+          <Route path="/shared/:username/progress" element={<SharedRoute />} />
           <Route path="/shared/:username/:slug" element={<SharedRoute />} />
           <Route path="/" element={<ProtectedPage />} />
           <Route path="/country" element={<ProtectedPage />} />
           <Route path="/country/:code" element={<ProtectedPage />} />
           <Route path="/users" element={<ProtectedPage />} />
+          <Route path="/progress" element={<ProtectedPage />} />
           <Route path="/:slug" element={<ProtectedPage />} />
         </Routes>
       </AuthProvider>
@@ -793,6 +887,9 @@ function AuthenticatedApp({ shared = false, username }) {
 
   if (pathname === `${basePath}/users` || pathname === '/users') return <UserList />
 
+  if (pathname === `${basePath}/progress` || pathname === '/progress')
+    return <ProgressPage shared={shared} username={username} />
+
   if (route.type === 'minimap') {
     const size = minimapSizes[minimapSize]
     return (
@@ -876,6 +973,24 @@ function AuthenticatedApp({ shared = false, username }) {
               <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
               <line x1="8" y1="2" x2="8" y2="18" />
               <line x1="16" y1="6" x2="16" y2="22" />
+            </svg>
+          </Link>
+          <Link to={`${basePath}/progress`} className="header-btn">
+            Progress
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ marginLeft: 6 }}
+            >
+              <line x1="12" y1="20" x2="12" y2="10" />
+              <line x1="18" y1="20" x2="18" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="16" />
             </svg>
           </Link>
           <Link to={`${basePath}/country`} className="header-btn">
